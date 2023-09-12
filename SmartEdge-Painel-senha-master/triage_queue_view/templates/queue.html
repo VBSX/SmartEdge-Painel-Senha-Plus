@@ -1,0 +1,51 @@
+<!-- queue.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fila</title>
+    <script src="static/scripts/sidebar.js"></script>
+    <link rel="stylesheet" href="static/styles/style_queue.css">
+    <link rel="stylesheet" href="static/styles/style_footer.css">
+</head>
+<body>
+    <header>
+        {% include 'header.html' %}
+        <div>
+            <h1>Fila</h1>
+        </div>
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>Documento</th>
+            <th>Número da Senha</th>
+            <th>Ação</th>
+        </tr>
+        {% for item in queue_data %}
+        <tr>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['document_number'] }}</td>
+            <td>{{ item['ticket_number'] }}</td>
+            <td class="buttons_table">
+                <form action="/call" method="post">
+                    <input type="hidden" name="name" value="{{ item['name'] }}">
+                    <input type="hidden" name="document_number" value="{{ item['document_number'] }}">
+                    <input type="hidden" name="ticket_number" value="{{ item['ticket_number'] }}">
+                    <input type="submit" value="Chamar">
+                </form>
+
+                <form action="/delete_queue" method="post">
+                    <input type="hidden" name="name" value="{{ item['name'] }}">
+                    <input type="hidden" name="document_number" value="{{ item['document_number'] }}">
+                    <input type="hidden" name="ticket_number" value="{{ item['ticket_number'] }}">
+                    <input type="submit" value="Deletar da fila">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <footer>
+        {% include 'footer.html' %}
+    </footer>
+</body>
+</html>
