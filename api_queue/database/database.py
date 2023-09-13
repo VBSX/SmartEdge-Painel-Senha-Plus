@@ -105,15 +105,14 @@ class Database():
             # Passo 3: Excluir os registros da fila
             delete_query = f"DELETE FROM fila WHERE StatusSenha = 'Cancelado' AND UnidadeID = {unity_id}"
             self.cursor.execute(delete_query)
-
+            
             # Commit das alterações
             self.conn.commit()
-            
-            return 'success'
+            return 'sucess'
+        
         except Exception as e:
             self.conn.rollback()
-            print(str(e))
-            return e
+            return 'error', e
 
 if __name__ == "__main__":
     db = Database()

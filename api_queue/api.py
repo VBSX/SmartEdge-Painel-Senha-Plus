@@ -187,11 +187,13 @@ class ApiQueue(Flask):
         client_id = request.form.get('client_id')
         
         has_permission = self.verify_if_client_has_permission(type_emission, client_id, client_secret)
-        print(has_permission)
         
         if has_permission:
             if zerar_fila == 'true':
-                return self.refresh_queue(unity_id)
+                if self.get_actual_queue_number(unity_id) == 'Fila Vazia':
+                    return jsonify({'error': 'Fila Vazia.'}), 404
+                else:
+                    return self.refresh_queue(unity_id)
 
             elif reiniciar_contagem == 'true':
                 self.current_ticket_number = 1
@@ -208,10 +210,12 @@ class ApiQueue(Flask):
         
     def refresh_queue(self, unity_id):
         return_database = self.database.refresh_queue(unity_id)
-        if return_database =='sucess':  
+        if return_database == 'sucess':  
             return jsonify({'message': 'Fila de senhas limpa.'}), 200
         else:
             return jsonify({'error': str(return_database[1])}), 400
+        
+        
 if __name__ == '__main__':
     app = ApiQueue(ip="localhost")
     app.run(port=5000, debug=True)
