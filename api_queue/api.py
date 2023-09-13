@@ -16,6 +16,7 @@ class ApiQueue(Flask):
         self.route('/queue', methods=['DELETE'])(self.delete_queue)
         self.queue = []
         self.current_ticket_number = 1
+        self.refresh_count = False
         # tambem precisa depois fazer o processo para que seja adicionado a letra junto
         # ao numero do ticket dependendo do serviço e da unidade que veio a senha
         self.database = Database()
@@ -25,7 +26,6 @@ class ApiQueue(Flask):
 
     def emit_ticket(self):
         if request.method == 'POST':
-            self.current_ticket_number
             name = request.form.get('name')
             document_number = request.form.get('document_number')
             
@@ -38,25 +38,29 @@ class ApiQueue(Flask):
             client_secret = request.form.get('client_secret')
             client_id = request.form.get('client_id')
             
-            verify_client_id_and_secret_of_api = self.database.client_id_and_client_secret_api(client_id, client_secret)
-            verify_client_id_and_secret_of_user_service_desk = self.database.client_id_and_client_secret_user_service_desk(client_id, client_secret)
-            client_autenticated = False
-            
-            if type_emission == 'totem':
-                if verify_client_id_and_secret_of_api:
-                    client_autenticated = True
-                else:
-                    return jsonify({'error': 'ClientId / Secret are invalid'}), 400    
-            elif type_emission == 'service_desk':
-                if verify_client_id_and_secret_of_user_service_desk:
-                    client_autenticated = True
-            
-            if client_autenticated:
+            if self.verify_if_client_has_permission(type_emission, client_id, client_secret):
                 if type_ticket == 'ticket_by_name':
                     return self.emit_ticket_by_name(priority, service_type, unity_id, name, document_number)    
                 elif type_ticket == 'ticket_by_number':
                     return self.emit_ticket_by_number(service_type, priority, unity_id)
-    
+            else:
+                return jsonify({'error': 'ClientId / Secret are invalid'}), 400  
+            
+    def verify_if_client_has_permission(self,type_emission, client_id, client_secret):
+        verify_client_id_and_secret_of_api = self.database.client_id_and_client_secret_api(client_id, client_secret)
+        verify_client_id_and_secret_of_user_service_desk = self.database.client_id_and_client_secret_user_service_desk(client_id, client_secret)
+        
+        if type_emission == 'totem':
+            if verify_client_id_and_secret_of_api:
+                return True
+            else: return False  
+        elif type_emission == 'service_desk':
+            if verify_client_id_and_secret_of_user_service_desk:
+                return True
+            else: return False
+        else:
+            return False
+            
     def emit_ticket_by_name(self, priority, service_type, unity_id, name, document_number):
         if name and not document_number:
             return jsonify({'error': 'Name and document number are required'}), 400
@@ -177,21 +181,37 @@ class ApiQueue(Flask):
         ticket_document_number = request.form.get('document_number')
         ticket_number = request.form.get('ticket_number')
 
-        if zerar_fila == 'true':
-            self.queue = []
+        type_emission = 'service_desk'
+        unity_id = request.form.get('unity_id')
+        client_secret = request.form.get('client_secret')
+        client_id = request.form.get('client_id')
+        
+        has_permission = self.verify_if_client_has_permission(type_emission, client_id, client_secret)
+        print(has_permission)
+        
+        if has_permission:
+            if zerar_fila == 'true':
+                return self.refresh_queue(unity_id)
+
+            elif reiniciar_contagem == 'true':
+                self.current_ticket_number = 1
+                return jsonify({'message': 'Contagem de senhas reiniciada.'}), 200
+            
+            elif ticket_name and ticket_document_number and ticket_number:
+                for i, ticket in enumerate(self.queue):
+                    if ticket['name'] == ticket_name and ticket['document_number'] == ticket_document_number and ticket['ticket_number'] == ticket_number:
+                        self.queue.pop(i)
+                        return jsonify({'message': 'Senha removida da fila.'}), 200
+                return jsonify({'error': 'Senha não encontrada na fila.'}), 404
+        else: 
+            return jsonify({'error': 'ClientId / Secret are invalid'}), 400     
+        
+    def refresh_queue(self, unity_id):
+        return_database = self.database.refresh_queue(unity_id)
+        if return_database =='sucess':  
             return jsonify({'message': 'Fila de senhas limpa.'}), 200
-        elif reiniciar_contagem == 'true':
-            self.current_ticket_number = 1
-            return jsonify({'message': 'Contagem de senhas reiniciada.'}), 200
-        
-        elif ticket_name and ticket_document_number and ticket_number:
-            for i, ticket in enumerate(self.queue):
-                if ticket['name'] == ticket_name and ticket['document_number'] == ticket_document_number and ticket['ticket_number'] == ticket_number:
-                    self.queue.pop(i)
-                    return jsonify({'message': 'Senha removida da fila.'}), 200
-            return jsonify({'error': 'Senha não encontrada na fila.'}), 404
-        
-        
+        else:
+            return jsonify({'error': str(return_database[1])}), 400
 if __name__ == '__main__':
     app = ApiQueue(ip="localhost")
     app.run(port=5000, debug=True)

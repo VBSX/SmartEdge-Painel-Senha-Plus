@@ -3,7 +3,7 @@ from time import sleep
 import schedule
 def resetar_senha():
     url = "http://127.0.0.1:5000/queue"
-    payload = 'zerar_fila=true'
+    payload = 'zerar_fila=true&unity_id=1&client_id=123456&client_secret=123456'
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
     }

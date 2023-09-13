@@ -83,6 +83,38 @@ class Database():
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def refresh_queue(self, unity_id):
+        try:
+            # Passo 1: Atualizar o status da senha para "Cancelado"
+            update_query = f"UPDATE fila SET StatusSenha = 'Cancelado' WHERE UnidadeID = {unity_id}"
+            self.cursor.execute(update_query)
+
+            # Atualizar os comentários
+            update_comments_query = f"UPDATE fila SET Comentarios = 'FILA ZERADA MANUALMENTE' WHERE UnidadeID = {unity_id}"
+            self.cursor.execute(update_comments_query)
+
+            # Passo 2: Mover os registros atualizados para o histórico
+            insert_query = f"""
+                INSERT INTO historicoatendimento (NumeroSenha, DataHoraInicio, ServicoID , Status, ClienteID, NomeCliente, NumeroDocumento, Prioridade, Comentarios, UnidadeID)
+                SELECT NumeroSenha, DataHoraEmissao, TipoServico, StatusSenha, ClienteID, NomeCliente, NumeroDocumento, Prioridade, Comentarios, UnidadeID
+                FROM fila
+                WHERE StatusSenha = 'Cancelado' AND UnidadeID = {unity_id}
+            """
+            self.cursor.execute(insert_query)
+
+            # Passo 3: Excluir os registros da fila
+            delete_query = f"DELETE FROM fila WHERE StatusSenha = 'Cancelado' AND UnidadeID = {unity_id}"
+            self.cursor.execute(delete_query)
+
+            # Commit das alterações
+            self.conn.commit()
+            
+            return 'success'
+        except Exception as e:
+            self.conn.rollback()
+            print(str(e))
+            return e
+
 if __name__ == "__main__":
     db = Database()
     print(db.select_all_from_query())

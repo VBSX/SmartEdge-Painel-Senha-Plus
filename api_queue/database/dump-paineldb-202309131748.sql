@@ -88,7 +88,7 @@ CREATE TABLE `fila` (
   `Comentarios` varchar(100) DEFAULT NULL,
   `UnidadeID` int(11) DEFAULT NULL,
   PRIMARY KEY (`SenhaID`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `fila` (
 
 LOCK TABLES `fila` WRITE;
 /*!40000 ALTER TABLE `fila` DISABLE KEYS */;
-INSERT INTO `fila` VALUES (5,1,'2023-09-13 14:47:16',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(6,2,'2023-09-13 14:47:25',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(7,3,'2023-09-13 16:03:45',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(8,1,'2023-09-13 16:04:18',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(9,2,'2023-09-13 16:12:35',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(10,3,'2023-09-13 16:12:41',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(11,4,'2023-09-13 16:12:42',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(12,5,'2023-09-13 16:12:43',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(13,1,'2023-09-13 16:13:01',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(14,2,'2023-09-13 16:13:05',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(15,3,'2023-09-13 16:13:07',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(16,4,'2023-09-13 16:13:09',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(17,5,'2023-09-13 16:13:11',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(18,4,'2023-09-13 16:14:02',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(19,5,'2023-09-13 16:14:17',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(20,6,'2023-09-13 16:28:31',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(21,7,'2023-09-13 16:28:36',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(22,8,'2023-09-13 16:28:40',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1),(23,9,'2023-09-13 16:29:13',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,1);
+INSERT INTO `fila` VALUES (8,1,'2023-09-13 16:04:18',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(9,2,'2023-09-13 16:12:35',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(10,3,'2023-09-13 16:12:41',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(11,4,'2023-09-13 16:12:42',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(12,5,'2023-09-13 16:12:43',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,2),(13,1,'2023-09-13 16:13:01',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(14,2,'2023-09-13 16:13:05',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(15,3,'2023-09-13 16:13:07',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(16,4,'2023-09-13 16:13:09',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3),(17,5,'2023-09-13 16:13:11',1,'aguardando','1','default',NULL,NULL,8,'1','0',NULL,3);
 /*!40000 ALTER TABLE `fila` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -110,12 +110,14 @@ DROP TABLE IF EXISTS `historicoatendimento`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `historicoatendimento` (
   `AtendimentoID` int(11) NOT NULL AUTO_INCREMENT,
-  `SenhaID` int(11) DEFAULT NULL,
+  `NumeroSenha` int(11) DEFAULT NULL,
   `DataHoraInicio` timestamp NOT NULL DEFAULT current_timestamp(),
   `DataHoraFim` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `AtendenteID` int(11) DEFAULT NULL,
   `ServicoID` int(11) DEFAULT NULL,
   `ClienteID` int(11) DEFAULT NULL,
+  `NomeCliente` varchar(100) DEFAULT NULL,
+  `NumeroDocumento` int(11) DEFAULT NULL,
   `Status` enum('Concluído','Cancelado','Outro') NOT NULL,
   `Comentarios` varchar(255) DEFAULT NULL,
   `Prioridade` int(11) DEFAULT NULL,
@@ -124,8 +126,9 @@ CREATE TABLE `historicoatendimento` (
   `NotaAtendimento` int(11) DEFAULT NULL,
   `FeedbackCliente` varchar(255) DEFAULT NULL,
   `ObservacoesAtendimento` text DEFAULT NULL,
+  `UnidadeID` int(11) DEFAULT NULL,
   PRIMARY KEY (`AtendimentoID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -134,6 +137,7 @@ CREATE TABLE `historicoatendimento` (
 
 LOCK TABLES `historicoatendimento` WRITE;
 /*!40000 ALTER TABLE `historicoatendimento` DISABLE KEYS */;
+INSERT INTO `historicoatendimento` VALUES (1,1,'2023-09-13 14:47:16','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(2,2,'2023-09-13 14:47:25','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(3,3,'2023-09-13 16:03:45','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(4,4,'2023-09-13 16:14:02','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(5,5,'2023-09-13 16:14:17','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(6,6,'2023-09-13 16:28:31','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(7,7,'2023-09-13 16:28:36','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(8,8,'2023-09-13 16:28:40','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(9,9,'2023-09-13 16:29:13','2023-09-13 18:09:08',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(23,1,'2023-09-13 18:22:50','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(24,2,'2023-09-13 18:22:56','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(25,3,'2023-09-13 18:22:58','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(26,4,'2023-09-13 18:22:59','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(27,5,'2023-09-13 18:23:00','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(28,6,'2023-09-13 18:23:01','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1),(29,7,'2023-09-13 18:23:02','2023-09-13 18:25:06',NULL,1,1,'default',NULL,'Cancelado','FILA ZERADA MANUALMENTE',8,NULL,NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `historicoatendimento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -394,4 +398,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-13 13:30:16
+-- Dump completed on 2023-09-13 17:48:12
