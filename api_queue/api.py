@@ -3,6 +3,7 @@ from flask import (
     jsonify,
     request)
 import requests
+from database.database import Database
 
 class ApiQueue(Flask):
     def __init__(self,ip):
@@ -15,6 +16,9 @@ class ApiQueue(Flask):
         self.route('/queue', methods=['DELETE'])(self.delete_queue)
         self.queue = []
         self.current_ticket_number = 1
+        # tambem precisa depois fazer o processo para que seja adicionado a letra junto
+        # ao numero do ticket dependendo do serviço e da unidade que veio a senha
+        self.database = Database()
 
     def get_queue(self):
         return jsonify(self.queue)
@@ -23,20 +27,65 @@ class ApiQueue(Flask):
         self.current_ticket_number
         name = request.form.get('name')
         document_number = request.form.get('document_number')
-        if not name or not document_number:
-            return jsonify({'error': 'Name and document number are required'}), 400
-        if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
-            return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
+        type_ticket = request.form.get('type_ticket')
+        priority = request.form.get('priority')
+        service_type = request.form.get('service_type')
+        service_desk = request.form.get('service_desk')
+        unity_id = request.form.get('unity_id')
+        
+        if type_ticket == 'ticket_by_name':
+            if name and not document_number:
+                return jsonify({'error': 'Name and document number are required'}), 400
+            if not name and document_number:
+                return jsonify({'error': 'Name and document number are required'}), 400
+            
+            if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
+                return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
+            
+            if name and document_number:
+                ticket = {
+                    'ticket_number': f'T{self.current_ticket_number}',
+                    'name': name,
+                    'document_number': document_number
+                }
+                self.current_ticket_number += 1
+                self.queue.append(ticket)
+                return jsonify({'ticket': ticket}), 200
+            
+        if type_ticket == 'ticket_by_number':
+            ticket_status='aguardando'
+            waiting_time_for_service= 1
+            
+            return_database = self.database.emit_ticket_by_number(
+                self.current_ticket_number,
+                service_type,
+                ticket_status,
+                priority,
+                waiting_time_for_service,
+                service_desk,
+                unity_id,
+            )
+            if return_database =='sucess':
+                self.current_ticket_number += 1
+                
+    # def emit_ticket(self):
+    #     self.current_ticket_number
+    #     name = request.form.get('name')
+    #     document_number = request.form.get('document_number')
+    #     if not name or not document_number:
+    #         return jsonify({'error': 'Name and document number are required'}), 400
+    #     if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
+    #         return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
            
-        else:
-            ticket = {
-                'ticket_number': f'T{self.current_ticket_number}',
-                'name': name,
-                'document_number': document_number
-            }
-            self.current_ticket_number += 1
-            self.queue.append(ticket)
-            return jsonify({'ticket': ticket}), 200
+    #     else:
+    #         ticket = {
+    #             'ticket_number': f'T{self.current_ticket_number}',
+    #             'name': name,
+    #             'document_number': document_number
+    #         }
+    #         self.current_ticket_number += 1
+    #         self.queue.append(ticket)
+    #         return jsonify({'ticket': ticket}), 200
 
     #Função para chamar uma senha
     def call_ticket(self):
