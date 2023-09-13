@@ -24,68 +24,105 @@ class ApiQueue(Flask):
         return jsonify(self.queue)
 
     def emit_ticket(self):
-        self.current_ticket_number
-        name = request.form.get('name')
-        document_number = request.form.get('document_number')
-        type_ticket = request.form.get('type_ticket')
-        priority = request.form.get('priority')
-        service_type = request.form.get('service_type')
-        service_desk = request.form.get('service_desk')
-        unity_id = request.form.get('unity_id')
+        if request.method == 'POST':
+            self.current_ticket_number
+            name = request.form.get('name')
+            document_number = request.form.get('document_number')
+            
+            type_ticket = request.form.get('type_ticket')
+            priority = request.form.get('priority')
+            service_type = request.form.get('service_type')
+            unity_id = request.form.get('unity_id')
+            type_emission = request.form.get('type_emission')
+            
+            client_secret = request.form.get('client_secret')
+            client_id = request.form.get('client_id')
+            
+            verify_client_id_and_secret_of_api = self.database.client_id_and_client_secret_api(client_id, client_secret)
+            verify_client_id_and_secret_of_user_service_desk = self.database.client_id_and_client_secret_user_service_desk(client_id, client_secret)
+            client_autenticated = False
+            
+            if type_emission == 'totem':
+                if verify_client_id_and_secret_of_api:
+                    client_autenticated = True
+                else:
+                    return jsonify({'error': 'ClientId / Secret are invalid'}), 400    
+            elif type_emission == 'service_desk':
+                if verify_client_id_and_secret_of_user_service_desk:
+                    client_autenticated = True
+            
+            if client_autenticated:
+                if type_ticket == 'ticket_by_name':
+                    return self.emit_ticket_by_name(priority, service_type, unity_id, name, document_number)    
+                elif type_ticket == 'ticket_by_number':
+                    return self.emit_ticket_by_number(service_type, priority, unity_id)
+    
+    def emit_ticket_by_name(self, priority, service_type, unity_id, name, document_number):
+        if name and not document_number:
+            return jsonify({'error': 'Name and document number are required'}), 400
+        if not name and document_number:
+            return jsonify({'error': 'Name and document number are required'}), 400
         
-        if type_ticket == 'ticket_by_name':
-            if name and not document_number:
-                return jsonify({'error': 'Name and document number are required'}), 400
-            if not name and document_number:
-                return jsonify({'error': 'Name and document number are required'}), 400
-            
-            if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
-                return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
-            
-            if name and document_number:
-                ticket = {
-                    'ticket_number': f'T{self.current_ticket_number}',
-                    'name': name,
-                    'document_number': document_number
-                }
-                self.current_ticket_number += 1
-                self.queue.append(ticket)
-                return jsonify({'ticket': ticket}), 200
-            
-        if type_ticket == 'ticket_by_number':
+        if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
+            return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
+        
+        if name and document_number:
             ticket_status='aguardando'
             waiting_time_for_service= 1
             
-            return_database = self.database.emit_ticket_by_number(
-                self.current_ticket_number,
-                service_type,
-                ticket_status,
-                priority,
-                waiting_time_for_service,
-                service_desk,
-                unity_id,
-            )
-            if return_database =='sucess':
-                self.current_ticket_number += 1
+            ticket_number = self.get_actual_queue_number(unity_id) 
+            if ticket_number == 'Fila Vazia':
+                ticket_number = 1
+            else:
+                ticket_number += 1
                 
-    # def emit_ticket(self):
-    #     self.current_ticket_number
-    #     name = request.form.get('name')
-    #     document_number = request.form.get('document_number')
-    #     if not name or not document_number:
-    #         return jsonify({'error': 'Name and document number are required'}), 400
-    #     if name in [ticket['name'] for ticket in self.queue] and document_number in [ticket['document_number'] for ticket in self.queue]:
-    #         return jsonify({'error': 'Nome Ou numero do documento já está na fila'}), 400
-           
-    #     else:
-    #         ticket = {
-    #             'ticket_number': f'T{self.current_ticket_number}',
-    #             'name': name,
-    #             'document_number': document_number
-    #         }
-    #         self.current_ticket_number += 1
-    #         self.queue.append(ticket)
-    #         return jsonify({'ticket': ticket}), 200
+            return_database = self.database.emit_ticket_by_name(
+                ticket_number,service_type,ticket_status,name, document_number, priority, waiting_time_for_service,unity_id
+            )
+            
+            if return_database =='sucess':
+                ticket = {
+                    'ticket_number': f'{self.current_ticket_number}',
+                    'name': name,
+                    'document_number': document_number
+                }
+                return jsonify({'ticket': ticket}), 200
+            else:
+                return jsonify({'error': str(return_database[1])}), 400
+            
+    def emit_ticket_by_number(self, service_type, priority, unity_id):
+        ticket_status='aguardando'
+        waiting_time_for_service= 1
+        ticket_number = self.get_actual_queue_number(unity_id) 
+        if ticket_number == 'Fila Vazia':
+            ticket_number = 1
+        else:
+            ticket_number += 1
+            
+        return_database = self.database.emit_ticket_by_number(
+            ticket_number,
+            service_type,
+            ticket_status,
+            priority,
+            waiting_time_for_service,
+            unity_id,
+        )
+        
+        if return_database =='sucess':
+            ticket = {
+                'ticket_number': f'{ticket_number}',
+            }
+            return jsonify({'ticket': ticket}), 200
+        else:
+            return jsonify({'error': str(return_database[1])}), 400
+        
+    def get_actual_queue_number(self, unity_id):
+        ticket = self.database.get_actual_queue_number(unity_id) 
+        if ticket:
+            ticket = ticket[0][0]
+            return ticket
+        else: 
+            return 'Fila Vazia'
 
     #Função para chamar uma senha
     def call_ticket(self):
