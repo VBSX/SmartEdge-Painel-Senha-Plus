@@ -161,6 +161,9 @@ class ApiQueue(Flask):
                         ticket.change_status('Em andamento')
                         name = ticket.client_name()
                         ticket.service_desk_change(service_desk)
+                        #TODO Caso a senha ja foi chamada, e o atendente quer chamar novamente
+                        # fazer uma função de recall de senhas.
+                        
                         # Fazer chamada da API para mostrar o conteúdo na tela
                         display_response = requests.post(self.url_panel_desktop, json={
                             'name': name,
@@ -169,17 +172,22 @@ class ApiQueue(Flask):
                             'service_type': service_type,
                             'ticket_number':ticket_number})
                         
-                        requests.post(self.url_panel_smartphone, json={
-                            'name': name,
-                            'unity_id' : unity_id,
-                            'service_desk': service_desk,
-                            'service_type': service_type,
-                            'ticket_number':ticket_number})
-                        
+                        try:
+                            requests.post(self.url_panel_smartphone, json={
+                                'name': name,
+                                'unity_id' : unity_id,
+                                'service_desk': service_desk,
+                                'service_type': service_type,
+                                'ticket_number':ticket_number})
+                        except:
+                            print('Erro ao chamar a API do Smartphone.') 
+                        print('codeeeee',display_response.status_code)
                         if display_response.status_code == 200:   
                             return jsonify({'message': 'Senha chamada com sucesso e conteúdo mostrado na tela.'}), 200
                         else:
                             return jsonify({'error': 'Erro ao chamar a senha ou mostrar o conteúdo na tela.'}), 500
+                    else:
+                        return jsonify({'error': 'Senha já foi chamada.'}), 404
                 else:
                     return jsonify({'error': 'Ticket não encontrado.'}), 404
             else:
