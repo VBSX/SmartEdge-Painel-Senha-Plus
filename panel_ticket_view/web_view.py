@@ -78,17 +78,18 @@ class DisplayApp(Flask):
             # Configurar um cookie com as configurações
             response = make_response('Configurações do servidor salvas com sucesso!')
 
-            # Defina os cookies
+            # Defina os cookies das configurações
             response.set_cookie('host', host)
-            response.set_cookie('usuario', user)  # Corrigido o nome da variável
-            response.set_cookie('senha', password)  # Corrigido o nome da variável
-            response.set_cookie('clientId', client_id)  # Corrigido o nome da variável
-            response.set_cookie('clientSecret', client_secret)  # Corrigido o nome da variável
+            response.set_cookie('usuario', user)
+            response.set_cookie('clientId', client_id)
+            response.set_cookie('clientSecret', client_secret)
 
+            # Configurar o cookie 'autenticado' para indicar que o cliente está autenticado
+            response.set_cookie('autenticado', 'true')
+            
             return response, 200
         else:
             return '', 401
-        
         
     def verify_if_is_data_is_valid(self, user, password, clientId, clientSecret):
         user_info, column_indices = self.db.get_all_info_user(user)

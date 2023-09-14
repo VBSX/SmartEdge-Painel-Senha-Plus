@@ -1,3 +1,52 @@
+// Função para ler um cookie específico pelo nome
+function getCookie(name) {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.startsWith(name + '=')) {
+            return cookie.substring(name.length + 1);
+        }
+    }
+    return null;
+}
+
+// Ler os cookies relevantes
+var hostCookie = getCookie('host');
+var usuarioCookie = getCookie('usuario');
+var clientIdCookie = getCookie('clientId');
+var clientSecretCookie = getCookie('clientSecret');
+var autenticadoCookie = getCookie('autenticado');
+
+// Verificar se o cliente está autenticado
+if (autenticadoCookie === 'true') {
+    // O cliente está autenticado, mostrar os menus 'Unidade' e 'Serviço'
+    document.getElementById('unidade-menu').style.display = 'block';
+    document.getElementById('servico-menu').style.display = 'block';
+
+    // Coloque aqui o código para preencher os menus 'Unidade' e 'Serviço' com as opções apropriadas
+    // Você pode adicionar aqui a lógica para criar e preencher os menus com base nos cookies
+} else {
+    // O cliente não está autenticado, ocultar os menus 'Unidade' e 'Serviço'
+    document.getElementById('unidade-menu').style.display = 'none';
+    document.getElementById('servico-menu').style.display = 'none';
+}
+
+// Função para mostrar os menus 'Unidade' e 'Serviço'
+function mostrarMenus() {
+    document.getElementById('unidade-menu').style.display = 'block';
+    document.getElementById('servico-menu').style.display = 'block';
+    // Coloque aqui o código para preencher os menus 'Unidade' e 'Serviço' com as opções apropriadas
+}
+
+// Verificar se o cliente está autenticado
+if (autenticadoCookie === 'true') {
+    mostrarMenus();
+} else {
+    // O cliente não está autenticado, ocultar os menus 'Unidade' e 'Serviço'
+    document.getElementById('unidade-menu').style.display = 'none';
+    document.getElementById('servico-menu').style.display = 'none';
+}
+
 // Função para mostrar o contêiner flutuante quando o botão é clicado
 document.getElementById("config-button").addEventListener("click", function () {
     document.getElementById("config-container").style.display = "block";
