@@ -4,6 +4,7 @@ from flask import (
     request)
 import requests
 from database.database import Database
+from ticket import Ticket
 
 class ApiQueue(Flask):
     def __init__(self,ip):
@@ -22,7 +23,9 @@ class ApiQueue(Flask):
         self.database = Database()
 
     def get_queue(self):
-        return jsonify(self.queue)
+        unity_id = request.args.get('unity_id')
+        queue = self.get_actual_queue_number(unity_id)
+        return queue
 
     def emit_ticket(self):
         if request.method == 'POST':
@@ -132,48 +135,56 @@ class ApiQueue(Flask):
     def call_ticket(self):
         """
         Função para chamar a próxima senha da fila e mostrar na tela.
+        argumentos esperados na requisição:
+        ticket_number
+        unity_id
+        service_desk
         """
-        # Verificar se a fila está vazia
-        if not self.queue:
-            return jsonify({'error': 'A fila está vazia.'}), 404
-        # Obter os dados do nome e número do documento do corpo da requisição
-        data = request.form
-        name = data.get('name')
-        document_number = data.get('document_number')
+        if request.method == 'POST':
+            ticket_number = request.form.get('ticket_number')
+            unity_id = request.form.get('unity_id')
+            service_desk = request.form.get('service_desk')
+            print(ticket_number, unity_id, service_desk)
         
-        # Procurar o ticket na fila pelo nome
-        ticket_index = None
-        for i, ticket in enumerate(self.queue):
-            if ticket['name'] == name and document_number == ticket['document_number']:
-                ticket_index = i
-                ticket_number = ticket['ticket_number']
-                break
-            
-        if ticket_index is not None:
-            # Remover o ticket da fila
-            ticket = self.queue.pop(ticket_index)
-            
-            # Fazer chamada à outra API para mostrar o conteúdo na tela
-            display_response = requests.post(self.url_panel_desktop, json={
-                'name': name,
-                'document_number': document_number,
-                'ticket_number':ticket_number})
-            requests.post(self.url_panel_smartphone, json={
-                'name': name,
-                'document_number': document_number,
-                'ticket_number':ticket_number})
-            
-            if display_response.status_code == 200:
-                with open('tickets.txt','a') as file:
-                    file.write(f'\nname:{name}/document_number:{document_number}')
-                    file.close()
+            if ticket_number and unity_id and service_desk:
+                ticket = Ticket(ticket_number, unity_id)
+                if ticket.has_data:
+                    status_ticket = ticket.status_ticket()
+                    service_type = ticket.service_type_description()
                     
-                return jsonify({'message': 'Senha chamada com sucesso e conteúdo mostrado na tela.'}), 200
+                    queue  = self.get_actual_queue_number(unity_id)
+                    # Verificar se a fila está vazia
+                    if queue == 'Fila Vazia':
+                        return jsonify({'error': 'A fila está vazia.'}), 404
+
+                    if status_ticket == 'aguardando':
+                        ticket.change_status('Em andamento')
+                        name = ticket.client_name()
+                        ticket.service_desk_change(service_desk)
+                        # Fazer chamada da API para mostrar o conteúdo na tela
+                        display_response = requests.post(self.url_panel_desktop, json={
+                            'name': name,
+                            'unity_id' : unity_id,
+                            'service_desk': service_desk,
+                            'service_type': service_type,
+                            'ticket_number':ticket_number})
+                        
+                        requests.post(self.url_panel_smartphone, json={
+                            'name': name,
+                            'unity_id' : unity_id,
+                            'service_desk': service_desk,
+                            'service_type': service_type,
+                            'ticket_number':ticket_number})
+                        
+                        if display_response.status_code == 200:   
+                            return jsonify({'message': 'Senha chamada com sucesso e conteúdo mostrado na tela.'}), 200
+                        else:
+                            return jsonify({'error': 'Erro ao chamar a senha ou mostrar o conteúdo na tela.'}), 500
+                else:
+                    return jsonify({'error': 'Ticket não encontrado.'}), 404
             else:
-                return jsonify({'error': 'Erro ao chamar a senha ou mostrar o conteúdo na tela.'}), 500
-        else:
-            return jsonify({'error': f'Senha com nome "{name}" não encontrada na fila.'}), 404
-        
+                return jsonify({'error': 'Parâmetros não informados.'}), 400
+
     def delete_queue(self):
         zerar_fila = request.form.get('zerar_fila')
         reiniciar_contagem = request.form.get('reiniciar_contagem')
@@ -214,8 +225,7 @@ class ApiQueue(Flask):
             return jsonify({'message': 'Fila de senhas limpa.'}), 200
         else:
             return jsonify({'error': str(return_database[1])}), 400
-        
-        
+             
 if __name__ == '__main__':
     app = ApiQueue(ip="localhost")
     app.run(port=5000, debug=True)

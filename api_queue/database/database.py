@@ -29,12 +29,11 @@ class Database():
         self, ticket_number, service_type, ticket_status, priority,
         waiting_time_for_service, unity_id
         ):
-        client_id = '1'
-        client_name = 'default'
+
         query =f"""
-            INSERT INTO fila (NumeroSenha, TipoServico, StatusSenha,ClienteID, NomeCliente, Prioridade,
+            INSERT INTO fila (NumeroSenha, TipoServico, StatusSenha, Prioridade,
             TempoEsperaEstimado, GuicheAgente, UnidadeID)
-            VALUES ({ticket_number}, '{service_type}', '{ticket_status}', {client_id}, '{client_name}', {priority},
+            VALUES ({ticket_number}, '{service_type}', '{ticket_status}', {priority},
             {waiting_time_for_service}, '{0}', {unity_id})
             """     
         try:
@@ -42,12 +41,13 @@ class Database():
             self.conn.commit()
             return 'sucess'
         except Exception as e:
+            self.conn.rollback()
             return 'error', e
     
     def emit_ticket_by_name(self, ticket_number, service_type, ticket_status,client_name,document_number, priority,
         waiting_time_for_service, unity_id):
         query =f"""
-            INSERT INTO fila (NumeroSenha, TipoServico, StatusSenha,ClienteID, NomeCliente, DocumentoCliente, Prioridade,
+            INSERT INTO fila (NumeroSenha, TipoServico, StatusSenha,ClienteID, NomeCliente, NumeroDocumento, Prioridade,
             TempoEsperaEstimado, UnidadeID)
             VALUES ({ticket_number}, '{service_type}', '{ticket_status}', {0}, '{client_name}', '{document_number}', {priority},
             {waiting_time_for_service}, {unity_id})
@@ -59,6 +59,7 @@ class Database():
             return 'sucess'
         
         except Exception as e:
+            self.conn.rollback()
             return 'error', e
     
     def client_id_and_client_secret_api(self, client_id, client_secret):
@@ -114,6 +115,45 @@ class Database():
             self.conn.rollback()
             return 'error', e
 
+    def change_status_ticket(self, ticket_number, unity_id, status_senha):
+        try:
+            update_query = f"UPDATE fila SET StatusSenha = '{status_senha}' WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
+            self.cursor.execute(update_query)
+            self.conn.commit()
+            return 'sucess'
+        
+        except Exception as e:
+            self.conn.rollback()
+            return 'error', e
+
+    def get_all_info_of_ticket(self, ticket_number, unity_id):
+        query = f"SELECT * FROM fila WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
+        self.cursor.execute(query)
+
+        # Mapear o nome das colunas para seus índices na tupla
+        column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
+
+        result = self.cursor.fetchall(), column_indices
+        if result:
+            return result
+        else:
+            return None
+    
+    def get_service_type_description(self, service_type_id):
+        query = f"SELECT NomeServico FROM servicos WHERE ServicoID = {service_type_id}"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()[0]
+    
+    def update_service_desk(self, ticket_number, unity_id, service_desk_id):
+        query = f"UPDATE fila SET GuicheAgente = {service_desk_id} WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
+        try:
+            self.cursor.execute(query)
+            self.conn.commit()
+            return 'sucess'
+        except Exception as e:
+            self.conn.rollback()
+            return 'error', e
+    
 if __name__ == "__main__":
     db = Database()
     print(db.select_all_from_query())

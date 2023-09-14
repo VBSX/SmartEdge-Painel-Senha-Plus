@@ -8,10 +8,14 @@ from flask import (
 from time import sleep
 
 class DisplayApp(Flask):
-    def __init__(self, name, ticket_number):
+    def __init__(self, name, ticket_number, service_desk, service_type, unity_id):
         super().__init__(__name__)
         self.name = name
         self.ticket_number = ticket_number
+        self.service_desk = service_desk
+        self.service_type = service_type
+        self.unity_id = unity_id
+        
         self.static_dir = '/static'
         self.config['SEND_FILE_MAX_AGE_DEFAULT'] = 300
         self.route('/favicon.ico')(self.favicon)
@@ -27,7 +31,7 @@ class DisplayApp(Flask):
     def send_content(self):
         def generate():
             while True:
-                content = f'{self.name}:{self.ticket_number}'
+                content = f'{self.name}:{self.ticket_number}:{self.service_desk}:{self.service_type}:{self.unity_id}:\n'
                 sleep(0.7)
                 yield f"data: {content}\n\n"
         sleep(0.1)
@@ -42,6 +46,10 @@ class DisplayApp(Flask):
         data = request.json
         self.name = data.get('name')
         self.ticket_number = data.get('ticket_number')
+        self.service_desk = data.get('service_desk')
+        self.service_type = data.get('service_type')
+        self.unity_id = data.get('unity_id')
+        
         return '', 200
 
     def painel_exibicao(self):
@@ -52,5 +60,5 @@ class DisplayApp(Flask):
     
 
 if __name__ == '__main__':
-    app = DisplayApp('', '')
+    app = DisplayApp('', '','', '', '')
     app.run(port=5001, debug=True)
