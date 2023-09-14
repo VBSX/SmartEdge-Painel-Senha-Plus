@@ -164,24 +164,15 @@ class ApiQueue(Flask):
                         #TODO Caso a senha ja foi chamada, e o atendente quer chamar novamente
                         # fazer uma função de recall de senhas.
                         
-                        # Fazer chamada da API para mostrar o conteúdo na tela
-                        display_response = requests.post(self.url_panel_desktop, json={
-                            'name': name,
-                            'unity_id' : unity_id,
-                            'service_desk': service_desk,
-                            'service_type': service_type,
-                            'ticket_number':ticket_number})
-                        
+                        # Fazer chamada da API para mostrar o conteudo na tela
+                        display_response = self.do_request_for_panel_web(
+                            name, unity_id, service_desk, service_type, ticket_number)
                         try:
-                            requests.post(self.url_panel_smartphone, json={
-                                'name': name,
-                                'unity_id' : unity_id,
-                                'service_desk': service_desk,
-                                'service_type': service_type,
-                                'ticket_number':ticket_number})
+                            self.do_request_for_panel_smartphone(
+                                name, unity_id, service_desk, service_type, ticket_number)
                         except:
                             print('Erro ao chamar a API do Smartphone.') 
-                        print('codeeeee',display_response.status_code)
+                            
                         if display_response.status_code == 200:   
                             return jsonify({'message': 'Senha chamada com sucesso e conteúdo mostrado na tela.'}), 200
                         else:
@@ -193,6 +184,24 @@ class ApiQueue(Flask):
             else:
                 return jsonify({'error': 'Parâmetros não informados.'}), 400
 
+    def do_request_for_panel_web(self, name, unity_id, service_desk, service_type, ticket_number):
+        display_response = requests.post(self.url_panel_desktop, json={
+            'name': name,
+            'unity_id' : unity_id,
+            'service_desk': service_desk,
+            'service_type': service_type,
+            'ticket_number':ticket_number})
+        return display_response
+
+    def do_request_for_panel_smartphone(self, name, unity_id, service_desk, service_type, ticket_number):
+        display_response = requests.post(self.url_panel_smartphone, json={
+            'name': name,
+            'unity_id' : unity_id,
+            'service_desk': service_desk,
+            'service_type': service_type,
+            'ticket_number':ticket_number})
+        return display_response   
+    
     def delete_queue(self):
         zerar_fila = request.form.get('zerar_fila')
         reiniciar_contagem = request.form.get('reiniciar_contagem')

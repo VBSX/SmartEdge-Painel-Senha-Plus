@@ -7,6 +7,7 @@ from flask import (
     url_for)
 import requests
 
+
 class TriageQueue(Flask):
     def __init__(self,ip):
         super().__init__(__name__)

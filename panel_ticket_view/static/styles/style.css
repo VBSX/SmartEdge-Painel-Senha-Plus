@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #000;
+}
+
+.text-informations{
+    color: #6385FF;
+    font-weight: bold;
+    margin-bottom: 50px;
+    font-size: 2em;
+    
+}
+header{
+    margin-top: 20px;
+    display: flex;
+    background-color: white;
+    width: 100%;
+    margin-bottom: 30px;
+}
+#content {
+    margin-top: 50px;
+    font-size:25px;
+    border: solid;
+    border-color: #212529;
+    padding-top: 30px;
+    border-radius: 20px;
+    background-color: white;
+    width: 50%;
+    display: flow-root;
+
+    margin: 0 auto;
+}
+#image-logo img{
+    margin: 0;
+    max-width: 164px;
+    min-width: 164px;
+}
+#image-logo{
+    width: 30%;
+}
+.content-item {
+    margin-bottom: 10px;
+}
+#name-content{
+    color: #6385FF;
+    font-size:50px;
+
+}
+#ticket-content{
+    color: #6385FF;
+    font-size:50px;
+
+}
+#div-text-informations{
+    display: grid;
+    width: 100%;
+    justify-content: left;
+}
+#config-button{
+    padding: 10px;
+    color: red;
+    background-color: black;
+    margin: 0;
+}
+/* Estilo para o contêiner flutuante */
+#config-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+}
+
+/* Estilo para os menus */
+#menu {
+    float: left;
+    width: 30%;
+}
+
+/* Estilo para o conteúdo dos menus */
+.menu-content {
+    display: none;
+    width: 70%;
+    float: right;
+}

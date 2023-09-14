@@ -4,9 +4,15 @@ from flask import (
     Response,
     send_from_directory,
     render_template,
-    redirect)
+    redirect,
+    make_response)
 from time import sleep
+import os
+import sys
 
+path = os.path.abspath('./')
+sys.path.append(path)
+from api_queue.database.database import Database
 class DisplayApp(Flask):
     def __init__(self, name, ticket_number, service_desk, service_type, unity_id):
         super().__init__(__name__)
@@ -16,6 +22,8 @@ class DisplayApp(Flask):
         self.service_type = service_type
         self.unity_id = unity_id
         
+        self.db = Database()
+        
         self.static_dir = '/static'
         self.config['SEND_FILE_MAX_AGE_DEFAULT'] = 300
         self.route('/favicon.ico')(self.favicon)
@@ -23,6 +31,7 @@ class DisplayApp(Flask):
         self.route('/static/<path:filename>')(self.serve_static)
         self.route('/display', methods=['POST'])(self.display_content)
         self.route('/display/painel')(self.painel_exibicao)
+        self.route('/display/painel/configserver', methods=['POST'])(self.configserver)
         self.route('/')(self.index_redirect)
 
     def favicon(self):
@@ -58,7 +67,41 @@ class DisplayApp(Flask):
     def index_redirect(self):
         return redirect('/display/painel')
     
+    def configserver(self):
+        host = request.form['host']
+        user = request.form['usuario']
+        password = request.form['senha']
+        client_id = request.form['clientId']
+        client_secret = request.form['clientSecret']
+        
+        if self.verify_if_is_data_is_valid(user, password, client_id, client_secret):
+            # Configurar um cookie com as configurações
+            response = make_response('Configurações do servidor salvas com sucesso!')
+
+            # Defina os cookies
+            response.set_cookie('host', host)
+            response.set_cookie('usuario', user)  # Corrigido o nome da variável
+            response.set_cookie('senha', password)  # Corrigido o nome da variável
+            response.set_cookie('clientId', client_id)  # Corrigido o nome da variável
+            response.set_cookie('clientSecret', client_secret)  # Corrigido o nome da variável
+
+            return response, 200
+        else:
+            return '', 401
+        
+        
+    def verify_if_is_data_is_valid(self, user, password, clientId, clientSecret):
+        user_info, column_indices = self.db.get_all_info_user(user)
+        password_db = user_info[0][column_indices['Senha']]
+        
+        has_autentication_api = self.db.client_id_and_client_secret_api(clientId, clientSecret)
+        has_autentication_api = has_autentication_api[0]
+        if password_db == password and has_autentication_api:
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     app = DisplayApp('', '','', '', '')
+    app.verify_if_is_data_is_valid('admin', '1', '1', '1')
     app.run(port=5001, debug=True)

@@ -8,8 +8,7 @@ class Ticket():
         self.column_indices = None  # Inicialize a variável column_indices como None
         self.has_data = False
         self.get_data()
-        
-        
+         
     def get_data(self):
         self.ticket, self.column_indices = self.database.get_all_info_of_ticket(self.ticket_number, self.unity_id)
         if self.ticket and self.column_indices is not None:

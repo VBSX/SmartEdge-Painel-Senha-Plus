@@ -153,7 +153,19 @@ class Database():
         except Exception as e:
             self.conn.rollback()
             return 'error', e
+
+    def get_all_info_user(self, user_name):
+        query = f"SELECT * FROM usuarios WHERE NomeUsuario = '{user_name}'"
+        self.cursor.execute(query)
     
+        # Mapear o nome das colunas para seus índices na tupla
+        column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
+
+        result = self.cursor.fetchall(), column_indices
+        if result:
+            return result
+        else:
+            return None
 if __name__ == "__main__":
     db = Database()
     print(db.select_all_from_query())

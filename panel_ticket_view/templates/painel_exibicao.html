@@ -1,78 +1,59 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualizador senhas</title>
     <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000;
-        }
-
-        .text-informations{
-            color: #6385FF;
-            font-weight: bold;
-            margin-bottom: 50px;
-            font-size: 2em;
-            
-        }
-        header{
-            margin-top: 20px;
-            display: flex;
-            background-color: white;
-            width: 100%;
-            margin-bottom: 30px;
-        }
-        #content {
-            margin-top: 50px;
-            font-size:25px;
-            border: solid;
-            border-color: #212529;
-            padding-top: 30px;
-            border-radius: 20px;
-            background-color: white;
-            width: 50%;
-            display: flow-root;
-
-            margin: 0 auto;
-        }
-        #image-logo img{
-            margin: 0;
-            max-width: 164px;
-            min-width: 164px;
-        }
-        #image-logo{
-            width: 30%;
-        }
-        .content-item {
-            margin-bottom: 10px;
-        }
-        #name-content{
-            color: #6385FF;
-            font-size:50px;
-
-        }
-        #ticket-content{
-            color: #6385FF;
-            font-size:50px;
-
-        }
-        #div-text-informations{
-            display: grid;
-            width: 100%;
-            justify-content: left;
-
-        }
-    </style>
+    <link rel="stylesheet" href="/static/styles/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script> 
-    <script src="/static/painel_exibicao.js">
-    </script>
-
+    <script src="/static/painel_exibicao.js"></script>
+    
 </head>
+
 <body>
     <header>
+    <!-- Botão para abrir o contêiner flutuante -->
+    <button id="config-button">Config</button>
+
+    <!-- Contêiner flutuante -->
+    <div id="config-container">
+        <button id="voltar">Voltar</button>
+        <div id="menu">
+            <ul>
+                <li><a href="#interface-menu">Interface</a></li>
+                <li><a href="#server-menu">Servidor</a></li>
+                <li><a href="#sound-menu">Som</a></li>
+            </ul>
+            <!-- Menu Unidade (será adicionado dinamicamente se necessário) -->
+            <ul id="unidade-menu"></ul>
+            <!-- Menu Serviço (será adicionado dinamicamente se necessário) -->
+            <ul id="servico-menu"></ul>
+        </div>
+        <div id="interface-menu" class="menu-content">
+            
+        </div>
+        <div id="server-menu" class="menu-content">
+            <!-- Conteúdo do menu Servidor -->
+            <form id="server-config-form">
+                <label for="host">Host:</label>
+                <input type="text" id="host" name="host" placeholder="https://"><br>
+                <label for="usuario">Usuário:</label>
+                <input type="text" id="usuario" name="usuario"><br>
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha"><br>
+                <label for="clientId">Client ID:</label>
+                <input type="text" id="clientId" name="clientId"><br>
+                <label for="clientSecret">Client Secret:</label>
+                <input type="password" id="clientSecret" name="clientSecret"><br>
+                <button type="submit">Salvar</button>
+            </form>
+        </div>
+        <div id="sound-menu" class="menu-content">
+            
+        </div>
+    <script src="/static/scripts/container.js"></script> 
+    </div>
         <div id="image-logo">
             <img src="{{ url_for('static', filename='images/smartedge.png') }}" alt="Logo" />
         </div>
