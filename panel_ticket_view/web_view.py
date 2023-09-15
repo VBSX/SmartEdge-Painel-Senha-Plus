@@ -5,7 +5,8 @@ from flask import (
     send_from_directory,
     render_template,
     redirect,
-    make_response)
+    make_response,
+    session)
 from time import sleep
 import os
 import sys
@@ -13,6 +14,8 @@ import sys
 path = os.path.abspath('./')
 sys.path.append(path)
 from api_queue.database.database import Database
+from flask import jsonify
+
 class DisplayApp(Flask):
     def __init__(self, name, ticket_number, service_desk, service_type, unity_id):
         super().__init__(__name__)
@@ -21,6 +24,7 @@ class DisplayApp(Flask):
         self.service_desk = service_desk
         self.service_type = service_type
         self.unity_id = unity_id
+
         
         self.db = Database()
         
@@ -32,6 +36,8 @@ class DisplayApp(Flask):
         self.route('/display', methods=['POST'])(self.display_content)
         self.route('/display/painel')(self.painel_exibicao)
         self.route('/display/painel/configserver', methods=['POST'])(self.configserver)
+        self.route('/display/painel/configunity', methods=['POST'])(self.configunity)
+        self.route('/display/painel/getunitys', methods=['GET'])(self.getunitys)
         self.route('/')(self.index_redirect)
 
     def favicon(self):
@@ -85,7 +91,12 @@ class DisplayApp(Flask):
             response.set_cookie('clientSecret', client_secret)
 
             # Configurar o cookie 'autenticado' para indicar que o cliente está autenticado
-            response.set_cookie('autenticado', 'true')
+            response.set_cookie('autenticado', 'True')
+            session['host'] = host
+            session['usuario'] = user
+            session['clientId'] = client_id
+            session['clientSecret'] = client_secret
+            session['autenticado'] = True
             
             return response, 200
         else:
@@ -101,8 +112,56 @@ class DisplayApp(Flask):
             return True
         else:
             return False
+        
+        
+    def getunitys(self):
+        all_unitys = self.db.get_all_unitys()
+        
+        # Inicialize uma lista vazia para armazenar as unidades
+        unity_list = []
+        
+        for unity in all_unitys:
+            unity_id = unity[0]
+            unity_name = unity[1]
+            
+            unity_info = {
+                'unity_id': unity_id,
+                'unity_name': unity_name
+            }
+            
+            unity_list.append(unity_info)
+            
+        status_code = 200
+        
+        return jsonify(unity_list) , status_code
 
+    def configunity(self):
+        unity_id = request.form['unity_id']
+        unity_name = request.form['unity_name']
+        client_secret = request.form['client_secret']
+        client_id = request.form['client_id']
+        
+        if session['autenticado'] == True and session[
+            'clientId'] == client_id and session['clientSecret'] == client_secret:
+            # Configurar um cookie com as configuraçães
+            response = make_response('Configuraçães do servidor salvas com sucesso!')
+
+            # Defina os cookies das configuraçães
+            response.set_cookie('unity_id', unity_id)
+            response.set_cookie('unity_name', unity_name)
+            response.set_cookie('unity_configured', True)
+            # Configurar o cookie 'autenticado' para indicar que o cliente está autenticado
+            response.set_cookie('autenticado', 'true')
+            session['unity_id'] = unity_id
+            session['unity_name'] = unity_name
+            session['autenticado'] = True
+            
+            return response, 200
+        else:
+            return '', 401
+  
 if __name__ == '__main__':
     app = DisplayApp('', '','', '', '')
+
     app.verify_if_is_data_is_valid('admin', '1', '1', '1')
     app.run(port=5001, debug=True)

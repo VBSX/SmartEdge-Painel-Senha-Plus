@@ -166,6 +166,11 @@ class Database():
             return result
         else:
             return None
+        
+    def get_all_unitys(self):
+        query = 'SELECT UnidadeID, NomeUnidade FROM unidades'
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
 if __name__ == "__main__":
     db = Database()
     print(db.select_all_from_query())
