@@ -10,17 +10,7 @@ function getCookie(name) {
     return null;
 }
 
-// Ler os cookies relevantes
-var hostCookie = getCookie('host');
-var usuarioCookie = getCookie('usuario');
-var clientIdCookie = getCookie('clientId');
-var clientSecretCookie = getCookie('clientSecret');
-var autenticadoCookie = getCookie('autenticado');
-var unidadeConfiguradaCookie = getCookie('unity_configured');
-if (unidadeConfiguradaCookie !== 'True'){
-configurar_menu_unidade();
-}
-autenticado();
+
 
 function configurar_menu_unidade() {
     var unidadeMenu = document.getElementById("unidade-menu");
@@ -188,3 +178,15 @@ document.getElementById("server-config-form").addEventListener("submit", functio
         console.error("Erro:", error);
     });
 });
+
+// Ler os cookies relevantes
+var hostCookie = getCookie('host');
+var usuarioCookie = getCookie('usuario');
+var clientIdCookie = getCookie('clientId');
+var clientSecretCookie = getCookie('clientSecret');
+var autenticadoCookie = getCookie('autenticado');
+var unidadeConfiguradaCookie = getCookie('unity_configured');
+if (unidadeConfiguradaCookie !== 'True'){
+configurar_menu_unidade();
+}
+autenticado();

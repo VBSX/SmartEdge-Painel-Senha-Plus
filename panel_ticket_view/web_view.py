@@ -17,8 +17,10 @@ from api_queue.database.database import Database
 from flask import jsonify
 
 class DisplayApp(Flask):
-    def __init__(self, name, ticket_number, service_desk, service_type, unity_id):
+    def __init__(self, name, ticket_number, service_desk, service_type, unity_id, secretkey):
         super().__init__(__name__)
+        self.secret_key= secretkey
+        
         self.name = name
         self.ticket_number = ticket_number
         self.service_desk = service_desk
@@ -92,7 +94,6 @@ class DisplayApp(Flask):
 
             # Configurar o cookie 'autenticado' para indicar que o cliente está autenticado
             response.set_cookie('autenticado', 'True')
-            session['host'] = host
             session['usuario'] = user
             session['clientId'] = client_id
             session['clientSecret'] = client_secret
@@ -161,7 +162,7 @@ class DisplayApp(Flask):
             return '', 401
   
 if __name__ == '__main__':
-    app = DisplayApp('', '','', '', '')
+    app = DisplayApp('', '','', '', '', 'asasdsaas465465')
 
     app.verify_if_is_data_is_valid('admin', '1', '1', '1')
     app.run(port=5001, debug=True)
