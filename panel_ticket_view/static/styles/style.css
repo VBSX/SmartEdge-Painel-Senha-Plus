@@ -82,14 +82,10 @@ header{
     width: 30%;
 }
 
-/* Estilo para o conteúdo dos menus */
+
 .menu-content {
     display: none;
     width: 70%;
     float: right;
 }
 
-/* #unidade-select,
-#salvar-unidade {
-    display: none;
-} */

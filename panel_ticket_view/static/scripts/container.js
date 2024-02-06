@@ -11,7 +11,6 @@ function getCookie(name) {
 }
 
 
-
 function configurar_menu_unidade() {
     var unidadeMenu = document.getElementById("unidade-menu");
 
@@ -106,8 +105,8 @@ function mostrarMenus() {
 function autenticado(){
     // Verificar se o cliente está autenticado
     if (autenticadoCookie === 'True') {
-        // configurar_menu_servico();
-        // configurar_menu_unidade();
+        configurar_menu_servico();
+        configurar_menu_unidade();
         mostrarMenus();
         document.getElementById('host').value = hostCookie || '';
         document.getElementById('usuario').value = usuarioCookie || '';
@@ -124,7 +123,7 @@ function autenticado(){
 
 // Função para mostrar o contêiner flutuante quando o botão é clicado
 document.getElementById("config-button").addEventListener("click", function () {
-    autenticado()
+    
     document.getElementById("config-container").style.display = "block";
 });
 
@@ -186,7 +185,5 @@ var clientIdCookie = getCookie('clientId');
 var clientSecretCookie = getCookie('clientSecret');
 var autenticadoCookie = getCookie('autenticado');
 var unidadeConfiguradaCookie = getCookie('unity_configured');
-if (unidadeConfiguradaCookie !== 'True'){
-configurar_menu_unidade();
-}
+
 autenticado();
