@@ -1,4 +1,8 @@
-from database.database import Database
+import os
+import sys
+path = os.path.abspath('./')
+sys.path.append(path)
+from api_queue.database.database import Database
 
 class Ticket():
     def __init__(self, ticket_number, unity_id):

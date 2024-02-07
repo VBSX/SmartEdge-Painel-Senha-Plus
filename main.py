@@ -14,7 +14,7 @@ if debug_server:
 else:
     ip_machine = "0.0.0.0"
 
-ticket_visualizator = DisplayApp('', '')
+ticket_visualizator = DisplayApp('', '', '', '', '', '')
 ticketing_and_queue_manager = TriageQueue(ip="127.0.0.1")
 api_server = ApiQueue(ip="127.0.0.1")
 totem_server = TotemPhone("127.0.0.1", '', '')
@@ -66,3 +66,6 @@ api_thread.start()
 ticket_visualizator_thread.start()
 ticketing_and_queue_manager_thread.start()
 totem_server_thread.start()
+print('iniciado o serviço no ip: ' + ip_machine + ' na porta 5000') 
+print('iniciado o serviço no ip: ' + ip_machine + ' na porta 5001')
+print('iniciado o serviço no ip: ' + ip_machine + ' na porta 5002')

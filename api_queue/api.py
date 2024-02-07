@@ -1,10 +1,14 @@
+import os
+import sys
+path = os.path.abspath('./')
+sys.path.append(path)
 from flask import (
     Flask,
     jsonify,
     request)
 import requests
-from database.database import Database
-from ticket import Ticket
+from api_queue.database.database import Database
+from api_queue.ticket import Ticket
 
 class ApiQueue(Flask):
     def __init__(self,ip):
@@ -244,8 +248,10 @@ class ApiQueue(Flask):
             return jsonify({'error': str(return_database[1])}), 400
              
 if __name__ == '__main__':
+
     app = ApiQueue(ip="localhost")
     app.run(port=5000, debug=True)
+    
 # if __name__ == "__main__":
 
 #     serve(app, host="0.0.0.0", port=5000)

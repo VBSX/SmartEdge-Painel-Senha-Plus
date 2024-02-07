@@ -35,7 +35,13 @@ class TriageQueue(Flask):
         requests.request("POST", self.url_api_get_queue, headers=headers, data=payload)
         
     def view_queue(self):
-        response = requests.request("GET", self.url_api_get_queue)
+        headers = """
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        """
+        payload=f'unity_id={1}'
+        response = requests.request("GET", self.url_api_get_queue, headers,payload)
         queue_data = response.json() 
         return render_template('queue.html', queue_data=queue_data)
 
