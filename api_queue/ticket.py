@@ -47,6 +47,7 @@ class Ticket():
             return service_description[0]
     
     def service_desk_change(self,service_desk_id):
+        # altera o ticket para o atendente que ira tratar o atendimento
         return_db = self.database.update_service_desk(self.ticket_number, self.unity_id, service_desk_id)
         return return_db
     

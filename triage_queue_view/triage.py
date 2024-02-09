@@ -36,22 +36,40 @@ class TriageQueue(Flask):
         type_emission = f'&type_emission=service_desk'
         client_secret = f'&client_secret=1'
         client_id = f'&client_id=1'
-        payload = name + document_number +type_ticket + priority + service_type  + unity_id + type_emission + client_secret + client_id
+        payload = name + document_number + type_ticket + priority + service_type  + unity_id + type_emission + client_secret + client_id
         headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
         return requests.request("POST", self.url_api_get_queue, headers=headers, data=payload)
         
     def view_queue(self):
+        """
+            ele irá fazer a chamada na api que retornará os dados:
+            ticket_number,
+            date_emission,
+            hour_emission,
+            service_type,
+            status_ticket,
+            client_id,
+            name,
+            document_number,
+            priority
+        """
         url = f"{self.url_api_get_queue}?unity_id=1"
         response = requests.request("GET", url)
-        print(response.text)
-        return render_template('queue.html', queue_data=response)
+        if response.status_code == 200:
+            queue = response.json()
+            # ajustar a questão do guiche atendimento e a unidade atual
+            return render_template('queue.html', queue_data=queue, id_guiche=1, unity_id = 1)
+        else:
+            return render_template('index.html')
+        
 
     def call_in_panel_view(self):
-        name = request.form['name']
-        ticket_number = request.form['document_number']
-        payload=f'name={name}&document_number={ticket_number}'
+        unity_id = request.form['unity_id']
+        ticket_number = request.form['ticket_number']
+        service_desk = request.form['service_desk']
+        payload=f'unity_id={unity_id}&ticket_number={ticket_number}&service_desk={service_desk}'
         headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -68,12 +86,11 @@ class TriageQueue(Flask):
             documento = request.form['documento']
             emission_ticket = self.queue_add(nome,documento)
             if emission_ticket.status_code == 200:
-                sucesso_return = True
+                return render_template('index.html', sucesso=True, nome=nome)
             else:
-                sucesso_return = False
-            
-            return render_template('index.html', sucesso=sucesso_return, nome=nome)
-
+                erro = emission_ticket.json()
+                erro = erro['error']
+                return render_template('index.html', sucesso=False, nome=nome, erro=erro)
         return render_template('index.html')
 
     def delete_queue(self):

@@ -39,6 +39,11 @@
                     <a href="/queue" id="mensagem-sucesso"> Fila</a>
                 </div>
             </div>
+            {% else %}
+            <div id="mensagem-erro" class="mensagem-erro">
+                Erro ao adicionar: {{ nome }}
+                Motivo: {{ erro }}
+            </div>
             {% endif %}
     </div>
     

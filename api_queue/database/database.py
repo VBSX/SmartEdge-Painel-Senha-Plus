@@ -94,8 +94,22 @@ class Database():
             print(er)
             return False      
         
-    def select_all_queue_from_query(self,UnidadeID):
-        query = f"SELECT * FROM fila where UnidadeID = {UnidadeID}"
+    def select_actual_queue(self,UnidadeID):
+        query = f"""
+        SELECT
+            NumeroSenha,
+            DataHoraEmissao,
+            TipoServico,
+            StatusSenha,
+            ClienteID,
+            NomeCliente,
+            NumeroDocumento,
+            Prioridade
+        from
+            fila
+        where
+            UnidadeID = {UnidadeID}
+            """
         return self.execute_query_return(query)
     
     def emit_ticket_by_number(
@@ -179,16 +193,16 @@ class Database():
 
     def get_all_info_of_ticket(self, ticket_number, unity_id):
         query = f"SELECT * FROM fila WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
-        self.cursor.execute(query)
+        return self.execute_query_return(query)
 
-        # Mapear o nome das colunas para seus índices na tupla
-        column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
+        # # Mapear o nome das colunas para seus índices na tupla
+        # column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
 
-        result = self.cursor.fetchall(), column_indices
-        if result:
-            return result
-        else:
-            return None
+        # result = self.cursor.fetchall(), column_indices
+        # if result:
+        #     return result
+        # else:
+        #     return None
     
     def get_service_type_description(self, service_type_id):
         query = f"SELECT NomeServico FROM servicos WHERE ServicoID = {service_type_id}"
@@ -218,4 +232,4 @@ class Database():
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())
-    print(db.select_all_queue_from_query(1))
+    print(db.select_actual_queue(1))

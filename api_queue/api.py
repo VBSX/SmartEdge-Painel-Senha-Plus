@@ -31,19 +31,54 @@ class ApiQueue(Flask):
         Função para apresentar a fila de acordo com a unidade do usuario
         argumentos esperados na requisição:
 
-        unity_id
+            unity_id
+        
+        argumentos retornados: 
+            ticket_number,
+            date_emission,
+            hour_emission,
+            service_type,
+            status_ticket,
+            client_id,
+            name,
+            document_number,
+            priority
         """
         
         if request.method =='GET':
             unity_id = request.args.get('unity_id')
             if unity_id:
-                return_db, queue = self.database.select_all_queue_from_query(unity_id)
+                return_db, queue = self.database.select_actual_queue(unity_id)
                 if return_db == 'sucess':
-                    return jsonify(queue)
+                    list_of_queue = []
+                    # como o banco irá retornar uma lista, é necessário transforma-lo em um json
+                    # configurando com o nome do campo
+                    # para que seja mais facil para utilizar depois
+                    for item in queue:
+                        # como o banco retorna datetime.datetime para a hora da emissão 
+                        # é necessário separa-lo para pegar apenas a data
+                        data_formatada = item[1].strftime("%d/%m/%Y")
+                        hora_formatada = item[1].strftime("%H:%M:%S")
+                        
+                        json = {
+                            'ticket_number': item[0],
+                            'date_emission': data_formatada,
+                            'hour_emission': hora_formatada,
+                            'service_type': item[2],
+                            'status_ticket': item[3],
+                            'client_id': item[4],
+                            'name': item[5],
+                            'document_number': item[6],
+                            'priority': item[7]
+                        }
+                        list_of_queue.append(json)
+                        
+                    return jsonify(list_of_queue),200
+                             
                 else:
-                    return jsonify({'error': return_db}), 400
+                    return jsonify({'error': str(queue)}), 400
             else:
-                return jsonify({'error': 'without unity id'}), 400  
+                return jsonify({'error': 'Sem o Id da Unidade'}), 400  
 
     def emit_ticket(self):
         """
@@ -168,7 +203,7 @@ class ApiQueue(Flask):
                 return ticket
             else: 
                 return 'Fila Vazia'
-    #Função para chamar uma senha
+
     def call_ticket(self):
         """
         Função para chamar a próxima senha da fila e mostrar na tela.
