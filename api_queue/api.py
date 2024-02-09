@@ -71,6 +71,7 @@ class ApiQueue(Flask):
             
             client_secret = request.form.get('client_secret')
             client_id = request.form.get('client_id')
+            print(client_id, client_secret, type_emission, type_ticket, priority, service_type, unity_id, name, document_number)
             if self.verify_if_client_has_permission(type_emission, client_id, client_secret):
                 if type_ticket == 'ticket_by_name':
                     return self.emit_ticket_by_name(priority, service_type, unity_id, name, document_number)    
@@ -117,7 +118,7 @@ class ApiQueue(Flask):
             return_database = self.database.emit_ticket_by_name(
                 ticket_number,service_type,ticket_status,name, document_number, priority, waiting_time_for_service,unity_id
             )
-            
+            print(return_database, 'return_database')
             if return_database =='sucess':
                 ticket = {
                     'ticket_number': f'{self.current_ticket_number}',
@@ -126,7 +127,9 @@ class ApiQueue(Flask):
                 }
                 return jsonify({'ticket': ticket}), 200
             else:
-                return jsonify({'error': str(return_database[1])}), 400
+                return jsonify({'error': str(return_database)}), 400
+        else:
+            return jsonify({'error': 'Name and document number are required'}), 400
             
     def emit_ticket_by_number(self, service_type, priority, unity_id):
         ticket_status='aguardando'

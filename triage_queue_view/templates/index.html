@@ -6,6 +6,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="static/styles/style_index.css">
     <script src="static/scripts/sidebar.js"></script>
+    <script src="static/scripts/label_handle.js"></script>
 </head>
 <body>
 <header >
@@ -21,8 +22,8 @@
             <label for="nome">Nome:</label>
             <input type="text" name="nome" id="nome" required>
 
-            <label for="documento">Número do Documento:</label>
-            <input type="text" name="documento" id="documento" required>
+            <label for="documento" >Número do Documento:</label>
+            <input type="text" name="documento" id="documento" required pattern="[0-9]*" oninput="validarInput(this)">
             
             <input type="submit" value="Triagem">
             {% if sucesso %}
@@ -40,6 +41,7 @@
             </div>
             {% endif %}
     </div>
+    
 <footer>
 {% include 'footer.html' %}
 </footer>

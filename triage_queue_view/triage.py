@@ -27,16 +27,25 @@ class TriageQueue(Flask):
         return send_from_directory('static', 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
     def queue_add(self,name, document):
-        payload=f'name={name}&document_number={document}'
-        
+        name = f'name={name}'
+        document_number = f'&document_number={document}'
+        type_ticket = '&type_ticket=ticket_by_name'
+        priority = f'&priority=1'
+        service_type = f'&service_type=1'
+        unity_id = f'&unity_id=1'
+        type_emission = f'&type_emission=service_desk'
+        client_secret = f'&client_secret=1'
+        client_id = f'&client_id=1'
+        payload = name + document_number +type_ticket + priority + service_type  + unity_id + type_emission + client_secret + client_id
         headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
         }
-        requests.request("POST", self.url_api_get_queue, headers=headers, data=payload)
+        return requests.request("POST", self.url_api_get_queue, headers=headers, data=payload)
         
     def view_queue(self):
         url = f"{self.url_api_get_queue}?unity_id=1"
         response = requests.request("GET", url)
+        print(response.text)
         return render_template('queue.html', queue_data=response)
 
     def call_in_panel_view(self):
@@ -57,8 +66,14 @@ class TriageQueue(Flask):
         if request.method == 'POST':
             nome = request.form['nome']
             documento = request.form['documento']
-            self.queue_add(nome,documento)
-            return render_template('index.html', sucesso=True, nome=nome)
+            emission_ticket = self.queue_add(nome,documento)
+            if emission_ticket.status_code == 200:
+                sucesso_return = True
+            else:
+                sucesso_return = False
+            
+            return render_template('index.html', sucesso=sucesso_return, nome=nome)
+
         return render_template('index.html')
 
     def delete_queue(self):
