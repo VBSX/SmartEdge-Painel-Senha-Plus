@@ -53,10 +53,10 @@ class Database():
                 self.connected = False
                 return 'sucess',self.cursor.fetchall()
             except Error as er:
+                self.conexao.rollback()
                 return 'error', er
         else:
             self.connected = False
-            self.conexao.rollback()
             Exception ("banco de dados desconectado")
             return self.message_connection_error   
         
@@ -109,6 +109,7 @@ class Database():
             fila
         where
             UnidadeID = {UnidadeID}
+            and StatusSenha = 'aguardando'
             """
         return self.execute_query_return(query)
     
@@ -184,51 +185,74 @@ class Database():
             return 'error', e
 
     def delete_ticket(self, ticket_number, unity_id):
-        query = f"DELETE FROM fila WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
+        query = f"UPDATE fila SET StatusSenha = 'Cancelado' WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
         return self.execute_query(query)
 
     def change_status_ticket(self, ticket_number, unity_id, status_senha):
         query = f"UPDATE fila SET StatusSenha = '{status_senha}' WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
         return self.execute_query(query)
 
-    def get_all_info_of_ticket(self, ticket_number, unity_id):
-        query = f"SELECT * FROM fila WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
+    def get_ticket(self, ticket_number, unity_id):
+        query = f"""
+        SELECT 
+            SenhaID,
+            NumeroSenha
+        FROM
+            fila
+        WHERE NumeroSenha = {ticket_number} 
+        AND UnidadeID = {unity_id}"""
         return self.execute_query_return(query)
-
-        # # Mapear o nome das colunas para seus índices na tupla
-        # column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
-
-        # result = self.cursor.fetchall(), column_indices
-        # if result:
-        #     return result
-        # else:
-        #     return None
     
     def get_service_type_description(self, service_type_id):
         query = f"SELECT NomeServico FROM servicos WHERE ServicoID = {service_type_id}"
-        return self.execute_query_return(query)[0]
+        return self.execute_query_return(query)
     
     def update_service_desk(self, ticket_number, unity_id, service_desk_id):
         query = f"UPDATE fila SET GuicheAgente = {service_desk_id} WHERE NumeroSenha = {ticket_number} AND UnidadeID = {unity_id}"
         return self.execute_query(query)
 
-    def get_all_info_user(self, user_name):
-        query = f"SELECT * FROM usuarios WHERE NomeUsuario = '{user_name}'"
-        self.cursor.execute(query)
+    def get_password_of_user(self, user_name):
+        query = f"SELECT Senha FROM usuarios WHERE NomeUsuario = '{user_name}'"
+        return self.execute_query_return(query)
     
-        # Mapear o nome das colunas para seus índices na tupla
-        column_indices = {desc[0]: index for index, desc in enumerate(self.cursor.description)}
-
-        result = self.cursor.fetchall(), column_indices
-        if result:
-            return result
-        else:
-            return None
-        
     def get_all_unitys(self):
         query = 'SELECT UnidadeID, NomeUnidade FROM unidades'
         return self.execute_query_return(query)
-       
+
+    def get_status_of_ticket(self, ticket_number, unity_id):
+        query = f"""
+        SELECT 
+            StatusSenha
+        FROM
+            fila
+        WHERE NumeroSenha = {ticket_number} 
+        AND UnidadeID = {unity_id}"""
+        return self.execute_query_return(query)
+    
+    def get_customer_name(self, ticket_number, unity_id):
+        query = f"""
+        SELECT
+            NomeCliente
+        FROM
+            fila
+        WHERE NumeroSenha = {ticket_number}
+        AND UnidadeID = {unity_id}"""
+        return self.execute_query_return(query)
+    
+    
+    def get_service_type_of_ticket(self, ticket_number, unity_id):
+        query = f"""
+        SELECT
+            TipoServico
+        FROM fila
+        WHERE 
+            NumeroSenha = {ticket_number} 
+        AND 
+            UnidadeID = {unity_id}
+        """
+        return self.execute_query_return(query)
+        
+        
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())

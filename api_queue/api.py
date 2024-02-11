@@ -210,7 +210,7 @@ class ApiQueue(Flask):
         argumentos esperados na requisição:
         ticket_number
         unity_id
-        service_desk
+        service_desk -- guiche de atendimento
         """
         if request.method == 'POST':
             ticket_number = request.form.get('ticket_number')
@@ -220,28 +220,31 @@ class ApiQueue(Flask):
         
             if ticket_number and unity_id and service_desk:
                 ticket = Ticket(ticket_number, unity_id)
+                print(ticket.has_data, 'ticket.has_data')
                 if ticket.has_data:
-                    status_ticket = ticket.status_ticket()
-                    service_type = ticket.service_type_description()
+                    return_db, status_ticket = ticket.status_ticket()
+                    return_db, service_type_description = ticket.service_type_description()
                     
-                    queue  = self.get_actual_queue_number(unity_id)
-                    # Verificar se a fila está vazia
-                    if queue == 'Fila Vazia':
-                        return jsonify({'error': 'A fila está vazia.'}), 404
-
+                    status_ticket= status_ticket[0][0]
+                    service_type_description = service_type_description[0][0]
+                    
+                    print(status_ticket, 'statussenha\n',service_type_description, 'servicetype')
                     if status_ticket == 'aguardando':
+                        print('statussenha = aguardando')
                         ticket.change_status('Em andamento')
-                        name = ticket.client_name()
+                        name = ticket.customer_name()
                         ticket.service_desk_change(service_desk)
+                        print('servico alterado para ', service_desk)
+                        
                         #TODO Caso a senha ja foi chamada, e o atendente quer chamar novamente
                         # fazer uma função de recall de senhas.
                         
                         # Fazer chamada da API para mostrar o conteudo na tela
                         display_response = self.do_request_for_panel_web(
-                            name, unity_id, service_desk, service_type, ticket_number)
+                            name, unity_id, service_desk, service_type_description, ticket_number)
                         try:
                             self.do_request_for_panel_smartphone(
-                                name, unity_id, service_desk, service_type, ticket_number)
+                                name, unity_id, service_desk, service_type_description, ticket_number)
                         except:
                             print('Erro ao chamar a API do Smartphone.') 
                             

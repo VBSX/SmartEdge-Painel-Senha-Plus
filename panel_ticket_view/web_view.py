@@ -26,8 +26,6 @@ class DisplayApp(Flask):
         self.service_desk = service_desk
         self.service_type = service_type
         self.unity_id = unity_id
-
-        
         self.db = Database()
         
         self.static_dir = '/static'
@@ -104,16 +102,18 @@ class DisplayApp(Flask):
             return '', 401
         
     def verify_if_is_data_is_valid(self, user, password, clientId, clientSecret):
-        user_info, column_indices = self.db.get_all_info_user(user)
-        password_db = user_info[0][column_indices['Senha']]
+        return_db, password_db = self.db.get_password_of_user(user)
+        if return_db == 'sucess':
+            password_db = password_db[0][0]
         
-        has_autentication_api = self.db.client_id_and_client_secret_api(clientId, clientSecret)
-        has_autentication_api = has_autentication_api[0]
-        if password_db == password and has_autentication_api:
-            return True
-        else:
+            has_autentication_api = self.db.client_id_and_client_secret_api(clientId, clientSecret)
+            has_autentication_api = has_autentication_api[0]
+            if password_db == password and has_autentication_api:
+                return True
+            else:
+                return False
+        else: 
             return False
-        
         
     def getunitys(self):
         all_unitys = self.db.get_all_unitys()

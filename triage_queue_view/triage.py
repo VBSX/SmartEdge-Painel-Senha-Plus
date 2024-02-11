@@ -64,11 +64,11 @@ class TriageQueue(Flask):
         else:
             return render_template('index.html')
         
-
     def call_in_panel_view(self):
         unity_id = request.form['unity_id']
         ticket_number = request.form['ticket_number']
         service_desk = request.form['service_desk']
+        print(unity_id, ticket_number, service_desk)
         payload=f'unity_id={unity_id}&ticket_number={ticket_number}&service_desk={service_desk}'
         headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
