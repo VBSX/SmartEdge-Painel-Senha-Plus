@@ -136,7 +136,6 @@ class Database():
             """
         return self.execute_query(query)
 
-    
     def client_id_and_client_secret_api(self, client_id, client_secret):
         query = f"""
         SELECT * FROM tokensapi WHERE ClientID = '{client_id}' and ClientSecret = '{client_secret}'
@@ -252,7 +251,19 @@ class Database():
         """
         return self.execute_query_return(query)
         
-        
+    def get_all_info_of_user(self, user_name):
+        query = f"SELECT * FROM usuarios WHERE NomeUsuario = '{user_name}'"
+        return self.execute_query_return(query)
+    
+    def get_all_unity_user_have_acess(self, user_id):
+        query = f"SELECT UnidadeID FROM usuariounidade WHERE UsuarioID = '{user_id}'"
+        return self.execute_query_return(query)
+    
+    def update_unity_of_user(self, user_id, unity_id):
+        query = f"UPDATE usuarios SET UltimaUnidadeUsada = {unity_id} WHERE UsuarioID = '{user_id}'"
+        return self.execute_query(query)
+    
+    
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())

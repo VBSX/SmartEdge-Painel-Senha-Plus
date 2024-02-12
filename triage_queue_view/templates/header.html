@@ -1,15 +1,24 @@
 <link rel="stylesheet" href="static/styles/style_header.css">
 <header id="line-menu">
-
+    {% if not is_login %}
     <button id="menu-button">Menu &#9776;</button>
     <div class="sidebar">
         <a href="javascript:void(0)" id="close-button">&times;</a> <!-- Adiciona o botão de fechamento -->
         <a href="/queue">Fila</a>
+        <script>console.log('unidade: {{ units }}');</script>
+        <select id="unit-dropdown">
+            {% for unit in units %}
+            <option value="{{ unit }}">{{ unit }}</option>
+            <script>console.log('unidade: {{ unit }}');</script>
+            {% endfor %}
+        </select>
+        
         <a href="/">Home</a>
+        <a href="/logout">Deslogar</a>
+        <a href="/config">Configurações</a>
     </div>
+    {% endif %}
     <div id="header">
         <img src="{{ url_for('static', filename='images/smartedge.png') }}" alt="Logo" />
     </div>
-
-
 </header>

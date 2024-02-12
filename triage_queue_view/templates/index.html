@@ -10,6 +10,8 @@
 </head>
 <body>
 <header >
+{% set actual_unity= actual_unity %} 
+{% set units= units %}
 {% include 'header.html' %}
 <div>
     <h1>Gerar Senha</h1>
@@ -39,7 +41,7 @@
                     <a href="/queue" id="mensagem-sucesso"> Fila</a>
                 </div>
             </div>
-            {% else %}
+            {% elif erro %}
             <div id="mensagem-erro" class="mensagem-erro">
                 Erro ao adicionar: {{ nome }}
                 Motivo: {{ erro }}

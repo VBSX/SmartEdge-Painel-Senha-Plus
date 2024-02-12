@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.tabs_menus {
+    background-color: #f4f4f4;
+    width: 200px;
+    height: 100vh;
+    float: left;
+}
+
+.tabs_menus ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.tabs_menus li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.tabs_menus li:hover {
+    background-color: #ddd;
+}
+
+.content {
+    margin-left: 200px; /* A mesma largura da barra lateral */
+    padding: 20px;
+}
