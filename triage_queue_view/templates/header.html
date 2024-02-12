@@ -5,14 +5,16 @@
     <div class="sidebar">
         <a href="javascript:void(0)" id="close-button">&times;</a> <!-- Adiciona o botão de fechamento -->
         <a href="/queue">Fila</a>
-        <script>console.log('unidade: {{ units }}');</script>
-        <select id="unit-dropdown">
-            {% for unit in units %}
-            <option value="{{ unit }}">{{ unit }}</option>
-            <script>console.log('unidade: {{ unit }}');</script>
-            {% endfor %}
-        </select>
-        
+
+        <a>Unidade: 
+            <select id="unit-dropdown">
+                {% for unit in units %}
+                    {% set unit_name = unit[1] %}
+                    {% set unit_id = unit[0] %}
+                    <option value="{{ unit_id }}">{{ unit_name }}</option>
+                {% endfor %}
+            </select>
+        </a>
         <a href="/">Home</a>
         <a href="/logout">Deslogar</a>
         <a href="/config">Configurações</a>

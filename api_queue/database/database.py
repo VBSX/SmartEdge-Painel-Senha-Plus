@@ -256,13 +256,20 @@ class Database():
         return self.execute_query_return(query)
     
     def get_all_unity_user_have_acess(self, user_id):
-        query = f"SELECT UnidadeID FROM usuariounidade WHERE UsuarioID = '{user_id}'"
+        query = f"""
+        SELECT usuariounidade.UnidadeID ,u.NomeUnidade 
+        FROM usuariounidade
+        LEFT JOIN unidades u ON usuariounidade.UnidadeID = u.UnidadeID
+        WHERE UsuarioID ='{user_id}'"""
         return self.execute_query_return(query)
     
     def update_unity_of_user(self, user_id, unity_id):
         query = f"UPDATE usuarios SET UltimaUnidadeUsada = {unity_id} WHERE UsuarioID = '{user_id}'"
         return self.execute_query(query)
     
+    def get_unity_name(self, unity_id):
+        query = f"SELECT NomeUnidade FROM unidades WHERE UnidadeID = {unity_id}"
+        return self.execute_query_return(query)
     
 if __name__ == "__main__":
     db = Database()

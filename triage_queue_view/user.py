@@ -25,8 +25,10 @@ class User():
             self.api_secret = user[7]
             self.status = user[8]
             self.last_unity = user[9]
+            self.name_last_unity = self.get_name_of_actual_unity()
             return_db, unitys = self.db.get_all_unity_user_have_acess(self.user_id)
             if return_db == 'sucess' and unitys:
+                # será retornado uma lista com o id e nome das unidades
                 self.unitys = unitys
             
         return return_db
@@ -36,8 +38,13 @@ class User():
         return_db = self.db.update_unity_of_user(self.user_id, unity_id)
         if return_db == 'sucess':
             self.last_unity = unity_id
+            self.name_last_unity = self.get_name_of_actual_unity()
         return return_db
     
+    def get_name_of_actual_unity(self):
+        return_db, name = self.db.get_unity_name(self.last_unity)
+        name = name[0][0]
+        return name
     
 if __name__ == '__main__':
     user  = User('admin')

@@ -5,7 +5,8 @@ from flask import (
     redirect,
     send_from_directory,
     url_for,
-    session
+    session,
+    jsonify
     )
 import requests
 import os
@@ -99,41 +100,44 @@ class TriageQueue(Flask):
             return redirect(url_for('view_queue'))
         else:
             return redirect(url_for('login'))
+        
     def index(self):
         """
-        Configuração da página inicial(Index)
-        
+        Configuração da página inicial (Index)
         """
         if 'username' in session:
-            if request.method == 'POST':
-                nome = request.form['nome']
-                documento = request.form['documento']
-                emission_ticket = self.queue_add(nome,documento)
-                if emission_ticket.status_code == 200:
-                    return render_template('index.html', sucesso=True, nome=nome)
-                else :
-                    erro = emission_ticket.json()
-                    erro = erro['error']
-                    sucesso=False,
-                    nome=nome
-                    erro=erro
-            elif request.method == 'UPDATE':
+            
+            if request.method == 'POST' and request.form.get('update_button'):
                 new_unity = request.form['new_unity']
                 self.set_new_unity_used(new_unity)
+                return 'atualizado', 200
+            
+            elif request.method == 'POST':
+                nome = request.form['nome']
+                documento = request.form['documento']
+                emission_ticket = self.queue_add(nome, documento)
+                if emission_ticket.status_code == 200:
+                    return render_template('index.html', sucesso=True, nome=nome)
+                else:
+                    erro = emission_ticket.json()['error']
+                    sucesso = False
+                    return render_template('index.html', sucesso=sucesso, nome=nome, erro=erro)
+
             elif request.method == 'GET':
-                sucesso=False
-                erro=None
-                nome=None
-            return render_template(
-                    'index.html',
-                    sucesso=sucesso,
-                    nome= nome,
-                    erro=erro,
-                    actual_unity = session['last_unity'],
-                    units=session['unitys'])
+                sucesso = False
+                erro = None
+                nome = None
+                actual_unity = session['last_unity']
+                units = session['unitys']
+                name_actual_unity = session['name_last_unity']
+                
+                return render_template('index.html', sucesso=sucesso, nome=nome, erro=erro, actual_unity=actual_unity,
+                                    units=units, name_actual_unity=name_actual_unity)
         else:
             return redirect(url_for('login'))
-        
+
+
+     
     def delete_queue(self):
         if 'username' in session:
             name = request.form['name']
@@ -168,7 +172,7 @@ class TriageQueue(Flask):
                     session['unitys'] = user.unitys
                     session['api_id'] = user.api_id
                     session['api_secret'] = user.api_secret
-                    
+                    session['name_last_unity'] = user.name_last_unity
                     print(session)
                     return redirect(url_for('index'))
                 else:
@@ -206,6 +210,7 @@ class TriageQueue(Flask):
         user = User(session['username'])
         user.update_unity_used(unity_id)
         session['last_unity'] = user.last_unity
+        session['name_last_unity'] = user.name_last_unity
         
 
     
