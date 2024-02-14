@@ -30,19 +30,4 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log(response);
         });
     });
-
-
-    var actualUnity = "{{ actual_unity }}";
-    var nameActualUnity = "{{ name_actual_unity }}";
-
-    var dropdown = document.getElementById("unit-dropdown");
-    for (var i = 0; i < dropdown.options.length; i++) {
-        if (dropdown.options[i].value == actualUnity) {
-            dropdown.selectedIndex = i;
-            console.log("Unidade atual selecionada:", nameActualUnity);
-            console.log("Unidade ID:", actualUnity);
-            console.log("Nome da Unidade:", nameActualUnity);
-            break;
-        }
-    }
 });

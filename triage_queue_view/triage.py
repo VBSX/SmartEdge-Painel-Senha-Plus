@@ -79,12 +79,24 @@ class TriageQueue(Flask):
             response = requests.request("GET", url)
             if response.status_code == 200:
                 queue = response.json()
+                actual_unity = session['last_unity']
+                units = session['unitys']
+                name_actual_unity = session['name_last_unity']
                 # ajustar a questão do guiche atendimento e a unidade atual
-                return render_template('queue.html', queue_data=queue, id_guiche=1, unity_id = 1)
+                return render_template(
+                    'queue.html',
+                    actual_unity=actual_unity,
+                    units=units,
+                    name_actual_unity=name_actual_unity,
+                    queue_data=queue,
+                    id_guiche=1,
+                    unity_id = actual_unity
+                    )
             else:
                 return render_template('index.html')
         else:
             return redirect(url_for('login'))
+        
     def call_in_panel_view(self):
         if 'username' in session:
             if request.method == 'POST':
@@ -212,7 +224,9 @@ class TriageQueue(Flask):
         session['last_unity'] = user.last_unity
         session['name_last_unity'] = user.name_last_unity
         
-
+    def get_all_unitys(self):
+        user = User(session['username'])
+        return user.unitys
     
     
 if __name__ == '__main__':

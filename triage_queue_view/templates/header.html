@@ -5,7 +5,7 @@
     <div class="sidebar">
         <a href="javascript:void(0)" id="close-button">&times;</a> <!-- Adiciona o botão de fechamento -->
         <a href="/queue">Fila</a>
-
+        {% if units %}
         <a>Unidade: 
             <select id="unit-dropdown">
                 {% for unit in units %}
@@ -14,13 +14,32 @@
                     <option value="{{ unit_id }}">{{ unit_name }}</option>
                 {% endfor %}
             </select>
+            <script>
+                var actualUnity = "{{ actual_unity }}";
+                var nameActualUnity = "{{ name_actual_unity }}";
+            
+                var dropdown = document.getElementById("unit-dropdown");
+                for (var i = 0; i < dropdown.options.length; i++) {
+                    if (dropdown.options[i].value == actualUnity) {
+                        dropdown.selectedIndex = i;
+                        console.log("Unidade atual selecionada:", nameActualUnity);
+                        console.log("Unidade ID:", actualUnity);
+                        console.log("Nome da Unidade:", nameActualUnity);
+                        break;
+                    }
+                }
+            </script>
         </a>
+        {% endif %}    
         <a href="/">Home</a>
         <a href="/logout">Deslogar</a>
         <a href="/config">Configurações</a>
     </div>
+    
     {% endif %}
     <div id="header">
+        <a href="/">
         <img src="{{ url_for('static', filename='images/smartedge.png') }}" alt="Logo" />
+        </a>
     </div>
 </header>
