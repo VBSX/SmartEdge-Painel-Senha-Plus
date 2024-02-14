@@ -14,7 +14,7 @@ import sys
 path = os.path.abspath('./')
 sys.path.append(path)
 from triage_queue_view.user import User
-
+from api_queue.database.database import Database
 class TriageQueue(Flask):
     def __init__(self,ip):
         super().__init__(__name__)
@@ -32,6 +32,7 @@ class TriageQueue(Flask):
         self.route('/login', methods=['GET', 'POST'])(self.login)
         self.route('/logout', methods=['GET'])(self.logout)
         self.route('/config', methods=['GET', 'POST'])(self.config_view)
+        self.route('/config/unit', methods=['get'])(self.get_all_unitys)
         self.route('/', methods=['GET', 'POST', 'UPDATE'])(self.index)
 
     def favicon(self):
@@ -225,9 +226,9 @@ class TriageQueue(Flask):
         session['name_last_unity'] = user.name_last_unity
         
     def get_all_unitys(self):
-        user = User(session['username'])
-        return user.unitys
-    
+        return_db, unitys = Database().get_all_units_info()
+        if return_db == 'sucess':
+            return unitys
     
 if __name__ == '__main__':
     app = TriageQueue(ip="localhost")

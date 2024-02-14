@@ -271,6 +271,10 @@ class Database():
         query = f"SELECT NomeUnidade FROM unidades WHERE UnidadeID = {unity_id}"
         return self.execute_query_return(query)
     
+    def get_all_units_info(self):
+        query = 'SELECT UnidadeID, NomeUnidade, Endereco, NumeroTelefone, email FROM unidades'
+        return self.execute_query_return(query)
+    
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())
