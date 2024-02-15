@@ -36,6 +36,7 @@ class TriageQueue(Flask):
         self.route('/config', methods=['GET', 'POST'])(self.config_view)
         self.route('/config/unit', methods=['GET'])(self.get_all_unitys)
         self.route('/config/unit', methods=['POST'])(self.update_unit)
+        self.route('/config/unit', methods=['DELETE'])(self.delete_unit)
         self.route('/', methods=['GET', 'POST', 'UPDATE'])(self.index)
 
     def favicon(self):
@@ -261,14 +262,23 @@ class TriageQueue(Flask):
    
     def add_new_unit(self, unity_name, unity_address, unity_phone, unity_email):
         return_db = self.database.add_new_unit( unity_name, unity_address, unity_phone, unity_email)
+        print(return_db)
         return self.handle_return_db(return_db)
+    
+    def delete_unit(self):
+        if request.method == 'DELETE':
+            unity_id = request.form['unity_id']
+            return_db = self.database.delete_unit(unity_id)
+            return self.handle_return_db(return_db)
         
     def handle_return_db(self, return_db):
         if return_db == 'sucess':
             return jsonify(return_db), 200
         else:
-            return jsonify(return_db), 400
-     
+            return jsonify(str(return_db)), 400
+    
+    
+    
 if __name__ == '__main__':
     app = TriageQueue(ip="localhost")
     app.run(port=5002, debug=True)

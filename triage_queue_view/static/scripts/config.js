@@ -1,4 +1,3 @@
-
 function editUnit(id) {
     var table = document.getElementById('unit-table');
     var rows = table.getElementsByTagName('tr');
@@ -23,13 +22,15 @@ function editUnit(id) {
             console.log('Número de telefone:', phone_unit);
             console.log('Email:', email_unit);
             update_unit(id_unit, name_unit, address_unit, phone_unit, email_unit);
+            aba_unidades();
             break;
         }
     }
 }
 async function update_unit(id_unit, name_unit, unity_address, unity_phone, unity_email) {
     var usuario_aceitou = await popup_warning(`Certeza que deseja continuar a atualizar as informações da unidade ${name_unit} ?`);
-    
+    // TODO: AJUSTAR O PROBLEMA DE ATUALIZAR A PAGINA APÓS ENVIAR O FORM 
+    // event.preventDefault(); NÃO FUNCIONA
     if (usuario_aceitou) {
         console.log('usuario aceitou');
         var formData = new FormData();
@@ -44,11 +45,12 @@ async function update_unit(id_unit, name_unit, unity_address, unity_phone, unity
             method: 'POST',
             body: formData
         }).then(async response => {
-            event.preventDefault();
             if (response.ok) {
-                
                 console.log('Unidade atualizada com sucesso!');
-                popup_sucess('Unidade atualizada com sucesso!');
+                await popup_sucess('Unidade atualizada com sucesso!').then(() => {
+                    aba_unidades();
+                    console.log('unidade att');
+                });
             } else {
                 // Read the text from the response
                 
@@ -62,7 +64,7 @@ async function update_unit(id_unit, name_unit, unity_address, unity_phone, unity
 
 async function createNewUnit(){
     Swal.fire({
-        title: '<strong>Custom HTML content</strong>',
+        title: '<strong>Cadastro de Unidade</strong>',
         html: `
           <label for="inputName">Nome da unidade:</label>
           <input type="text" id="inputName" class="swal2-input" required>
@@ -90,6 +92,7 @@ async function createNewUnit(){
           }
           else{          
             post_new_unit(inputName,inputEndereco, inputNumeroTelefone, inputEmail)
+            aba_unidades()
           }
         }
       })
@@ -118,6 +121,31 @@ async function post_new_unit(name,endereco, numeroTelefone,email){
         }
     });
 }
+
+function delete_unit(id) {
+    popup_warning(`Certeza que deseja deletar a unidade ${id} ?`).then(async (usuario_aceitou) => {
+        if (usuario_aceitou){
+            var formData = new FormData();
+            formData.append('unity_id', id);
+
+            fetch('/config/unit', {
+                method: 'DELETE',
+                body: formData
+            }).then(async response => {
+                if (response.ok) {
+                    console.log('Unidade deletada com sucesso!');
+                    popup_sucess('Unidade deletada com sucesso!');
+                } else {
+                    // Read the text from the response
+                    var message_error = await response.text();
+                    console.error('Erro ao deletar a unidade.');
+                    popup_error(`Erro ao deletar a unidade: ${message_error}`);
+                }
+            });
+        }
+    });
+}
+    
 
 async function popup_warning(text_warning) {
     return new Promise((resolve) => {
@@ -166,9 +194,135 @@ function popup_error(text_error) {
     });
 }
 
+function aba_sistema() {
+    const htmlContent = `
+        <h2>Sistema</h2>
+        <p>Conteúdo da aba de Sistema...</p>
+    `;
+    put_html_on_content_div(htmlContent)
+
+}
+function aba_unidades() { 
+    get_units().then(data => {
+        put_html_on_content_div(generate_html_for_unit(data));
+    });
+}
+
+function generate_html_for_unit(list_units){
+    var htmlContent = `
+        <h2>Unidades</h2>
+        <button onclick="createNewUnit()" class="btn btn-outline-secondary btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">Adicionar Nova Unidade</button>
+        <table id="unit-table">
+            <tr>
+                <th>Id da unidade</th>
+                <th>Nome da Unidade</th>
+                <th>Endereço</th>
+                <th>Número de Telefone</th>
+                <th>Email</th>
+                <th>Ações</th>
+            </tr>
+    `;
+    for (var i = 0; i < list_units.length; i++) {
+        var unit = list_units[i];
+        var id_unit = unit[0];
+        var name_unit = unit[1];
+        var address_unit = unit[2];
+        var phone_unit = unit[3];
+        var email_unit = unit[4];
+        htmlContent += `
+            <tr>
+                <td>${id_unit}</td>
+                <td contenteditable="true">${name_unit}</td>
+                <td contenteditable="true">${address_unit}</td>
+                <td contenteditable="true">${phone_unit}</td>
+                <td contenteditable="true">${email_unit}</td>
+                <td><button type="button" onclick="editUnit(${id_unit})" class="btn btn-outline-primary btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">Editar</button>
+                <button type="button" onclick="delete_unit(${id_unit})" class="btn btn-outline-danger btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">Deletar</button>
+                </td>
+            </tr>
+        `;
+    }
+    htmlContent += `
+        </table>    
+    `;
+    return htmlContent;
+}
+
+function get_units(){
+    return fetch('/config/unit', {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+     return data;
+    })
+    .catch(error => {
+     console.error(error);
+    });
+}
+
+function aba_departamentos() {
+    const htmlContent = `
+        <h2>Departamentos</h2>
+        <p>Conteúdo da aba de Departamentos...</p>
+    `;
+    put_html_on_content_div(htmlContent)
+
+}
+function aba_servicos() {
+    const htmlContent = `
+        <h2>Serviços</h2>
+        <p>Conteúdo da aba de Serviços...</p>
+    `;
+    put_html_on_content_div(htmlContent)
+
+}
+function aba_prioridades() {
+    const htmlContent= `
+        <h2>Prioridades</h2>
+        <p>Conteúdo da aba de Prioridades...</p>
+        `;
+        put_html_on_content_div(htmlContent)
+}
+
+function aba_locais(){
+    const htmlContent= `
+        <h2>Locais</h2>
+        <p>Conteúdo da aba de Locais...</p>
+        `;
+        put_html_on_content_div(htmlContent)
+}
+function aba_perfis(){
+    const htmlContent= `
+        <h2>Perfis</h2>
+        <p>Conteúdo da aba de Perfis...</p>
+        `;
+        put_html_on_content_div(htmlContent)
+}
+function aba_usuarios(){
+    const htmlContent= `
+        <h2>Usuários</h2>
+        <p>Conteúdo da aba de Usuários...</p>
+        `;
+        put_html_on_content_div(htmlContent)
+}
+
+function put_html_on_content_div(htmlContent){
+    // Ou, se você estiver usando uma classe e deseja selecionar o primeiro elemento da coleção:
+    const contentDiv = document.getElementsByClassName('content')[0];
+
+    // Verifica se a div de conteúdo foi encontrada
+    if (contentDiv) {
+        // Define o HTML da div de conteúdo para o HTML desejado
+        contentDiv.innerHTML = htmlContent;
+    } else {
+        console.error('Div de conteúdo não encontrada');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tabs_menus li');
-
+   
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const tabId = this.getAttribute('id');
@@ -209,129 +363,5 @@ document.addEventListener('DOMContentLoaded', function() {
             } 
         });
     });
-    function aba_sistema() {
-        const htmlContent = `
-            <h2>Sistema</h2>
-            <p>Conteúdo da aba de Sistema...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-
-    }
-    function aba_unidades() { 
-        get_units().then(data => {
-            put_html_on_content_div(generate_html_for_unit(data));
-        });
-    }
-    
-    function generate_html_for_unit(list_units){
-        var htmlContent = `
-            <h2>Unidades</h2>
-            <button onclick="createNewUnit()" class="btn btn-outline-secondary btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">Nova Unidade</button>
-            <table id="unit-table">
-                <tr>
-                    <th>Id da unidade</th>
-                    <th>Nome da Unidade</th>
-                    <th>Endereço</th>
-                    <th>Número de Telefone</th>
-                    <th>Email</th>
-                    <th>Ações</th>
-                </tr>
-        `;
-        for (var i = 0; i < list_units.length; i++) {
-            var unit = list_units[i];
-            var id_unit = unit[0];
-            var name_unit = unit[1];
-            var address_unit = unit[2];
-            var phone_unit = unit[3];
-            var email_unit = unit[4];
-            htmlContent += `
-                <tr>
-                    <td>${id_unit}</td>
-                    <td contenteditable="true">${name_unit}</td>
-                    <td contenteditable="true">${address_unit}</td>
-                    <td contenteditable="true">${phone_unit}</td>
-                    <td contenteditable="true">${email_unit}</td>
-                    <td><button type="button" onclick="editUnit(${id_unit})" class="btn btn-outline-primary btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">Editar</button></td>
-                </tr>
-            `;
-        }
-        htmlContent += `
-            </table>    
-        `;
-        return htmlContent;
-    }
-
-    function get_units(){
-        return fetch('/config/unit', {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-         return data;
-        })
-        .catch(error => {
-         console.error(error);
-        });
-    }
-
-    function aba_departamentos() {
-        const htmlContent = `
-            <h2>Departamentos</h2>
-            <p>Conteúdo da aba de Departamentos...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-
-    }
-    function aba_servicos() {
-        const htmlContent = `
-            <h2>Serviços</h2>
-            <p>Conteúdo da aba de Serviços...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-
-    }
-    function aba_prioridades() {
-        const htmlContent= `
-            <h2>Prioridades</h2>
-            <p>Conteúdo da aba de Prioridades...</p>
-            `;
-            put_html_on_content_div(htmlContent)
-    }
-
-    function aba_locais(){
-        const htmlContent= `
-            <h2>Locais</h2>
-            <p>Conteúdo da aba de Locais...</p>
-            `;
-            put_html_on_content_div(htmlContent)
-    }
-    function aba_perfis(){
-        const htmlContent= `
-            <h2>Perfis</h2>
-            <p>Conteúdo da aba de Perfis...</p>
-            `;
-            put_html_on_content_div(htmlContent)
-    }
-    function aba_usuarios(){
-        const htmlContent= `
-            <h2>Usuários</h2>
-            <p>Conteúdo da aba de Usuários...</p>
-            `;
-            put_html_on_content_div(htmlContent)
-    }
-
-    function put_html_on_content_div(htmlContent){
-        // Ou, se você estiver usando uma classe e deseja selecionar o primeiro elemento da coleção:
-        const contentDiv = document.getElementsByClassName('content')[0];
-    
-        // Verifica se a div de conteúdo foi encontrada
-        if (contentDiv) {
-            // Define o HTML da div de conteúdo para o HTML desejado
-            contentDiv.innerHTML = htmlContent;
-        } else {
-            console.error('Div de conteúdo não encontrada');
-        }
-    }
-
 });
 

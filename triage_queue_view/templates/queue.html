@@ -38,14 +38,14 @@
                     <input type="hidden" name="ticket_number" value="{{ item['ticket_number'] }}">
                     <input type="hidden" name="service_desk" value="{{ id_guiche }}">
                     <input type="hidden" name="unity_id" value="{{ unity_id }}">
-                    <input type="submit" value="Chamar">
+                    <input type="submit" value="Chamar" class="btn btn-outline-primary btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">
                 </form>
 
                 <form action="/delete_queue" method="post">
                     <input type="hidden" name="ticket_number" value="{{ item['ticket_number'] }}">
                     <input type="hidden" name="name" value="{{ item['name'] }}">
                     <input type="hidden" name="document_number" value="{{ item['document_number'] }}">
-                    <input type="submit" value="Deletar da fila">
+                    <input type="submit" value="Deletar da fila" class="btn btn-outline-danger btn-rounded" data-mdb-ripple-init  data-mdb-ripple-color="dark">
                 </form>
             </td>
         </tr>

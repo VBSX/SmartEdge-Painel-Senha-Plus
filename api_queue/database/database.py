@@ -257,10 +257,19 @@ class Database():
     
     def get_all_unity_user_have_acess(self, user_id):
         query = f"""
-        SELECT usuariounidade.UnidadeID ,u.NomeUnidade 
-        FROM usuariounidade
-        LEFT JOIN unidades u ON usuariounidade.UnidadeID = u.UnidadeID
-        WHERE UsuarioID ='{user_id}'"""
+        select
+            usuariounidade.UnidadeID ,
+            u.NomeUnidade
+        from
+            usuariounidade
+        left join unidades u on
+            usuariounidade.UnidadeID = u.UnidadeID
+        where
+            UsuarioID = '{user_id}'
+        and
+            Status = 'ativo'
+        
+        """
         return self.execute_query_return(query)
     
     def update_unity_of_user(self, user_id, unity_id):
@@ -268,11 +277,33 @@ class Database():
         return self.execute_query(query)
     
     def get_unity_name(self, unity_id):
-        query = f"SELECT NomeUnidade FROM unidades WHERE UnidadeID = {unity_id}"
+        query = f"""
+        select
+            NomeUnidade
+        from
+            unidades
+        where
+            UnidadeID = {unity_id}
+        and
+            Status = 'ativo'
+        
+        """
         return self.execute_query_return(query)
     
     def get_all_units_info(self):
-        query = 'SELECT UnidadeID, NomeUnidade, Endereco, NumeroTelefone, email FROM unidades'
+        query = """
+        select
+            UnidadeID,
+            NomeUnidade,
+            Endereco,
+            NumeroTelefone,
+            email
+        from
+            unidades
+        where
+            Status = 'ativo'
+        
+        """
         return self.execute_query_return(query)
     
     def update_unit_info(self,unity_id,unity_name, unity_address,unity_phone,unity_email ):
@@ -288,12 +319,16 @@ class Database():
 
     def add_new_unit(self, unity_name, unity_address, unity_phone, unity_email):
         query = f"""
-        INSERT INTO unidades (Endereco, NomeUnidade, NumeroTelefone, email)
-        VALUES ('{unity_address}', '{unity_name}', '{unity_phone}', '{unity_email}')
+        INSERT INTO unidades (Endereco, NomeUnidade, NumeroTelefone, email, Status)
+        VALUES ('{unity_address}', '{unity_name}', '{unity_phone}', '{unity_email}', 'ativo')
             """
         return self.execute_query(query)
         
-        
+    def delete_unit(self, unity_id):
+        query = f"UPDATE unidades SET STATUS = 'desativado' WHERE UnidadeID = {unity_id}"
+        return self.execute_query(query)
+    
+     
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())
