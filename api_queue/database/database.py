@@ -328,7 +328,44 @@ class Database():
         query = f"UPDATE unidades SET STATUS = 'desativado' WHERE UnidadeID = {unity_id}"
         return self.execute_query(query)
     
-     
+    def get_all_users(self):
+        query = """
+        select
+            UsuarioID,
+            Nome,
+            Sobrenome,
+            NomeUsuario,
+            Cargo,
+            DataCadastro
+        from
+            usuarios
+        where
+            Status = 'ativo'
+        """
+        return self.execute_query_return(query)
+    
+    def get_all_roles(self):
+        query = """
+        select
+            CargoID,
+            NomeCargo
+        from
+            cargos
+        where
+            status = 'ativo'
+        """
+        return self.execute_query_return(query)
+    
+    def update_user_info(self, id, name, lastname, role):
+        query = f"""
+        UPDATE usuarios SET
+            Nome = '{name}',
+            Sobrenome = '{lastname}',
+            Cargo = {role}
+        WHERE UsuarioID = {id}
+        """
+        self.execute_query(query)
+    
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())

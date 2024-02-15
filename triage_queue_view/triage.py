@@ -16,6 +16,7 @@ sys.path.append(path)
 from triage_queue_view.user import User
 from api_queue.database.database import Database
 from flask import jsonify
+
 class TriageQueue(Flask):
     def __init__(self,ip):
         super().__init__(__name__)
@@ -37,6 +38,10 @@ class TriageQueue(Flask):
         self.route('/config/unit', methods=['GET'])(self.get_all_unitys)
         self.route('/config/unit', methods=['POST'])(self.update_unit)
         self.route('/config/unit', methods=['DELETE'])(self.delete_unit)
+        self.route('/config/users', methods=['GET'])(self.get_users)
+        self.route('/config/users', methods=['POST'])(self.update_user)
+        self.route('/config/role', methods=['GET'])(self.get_roles)
+        
         self.route('/', methods=['GET', 'POST', 'UPDATE'])(self.index)
 
     def favicon(self):
@@ -277,6 +282,26 @@ class TriageQueue(Flask):
         else:
             return jsonify(str(return_db)), 400
     
+    def get_users(self):
+        return_db, users = self.database.get_all_users()
+        if return_db == 'sucess':
+            return users
+    
+    def get_roles(self):
+        return_db, roles = self.database.get_all_roles()
+        if return_db == 'sucess':
+            return roles
+    
+    def update_user(self):
+        if request.method == 'POST':
+            type_post = request.form['type_post']
+            id = request.form['id']
+            name = request.form['name']
+            last_name = request.form['last_name']
+            role = request.form['role']
+            if type_post == 'update_user':
+                return_db = self.database.update_user_info(id, name, last_name, role)
+                return self.handle_return_db(return_db)
     
     
 if __name__ == '__main__':

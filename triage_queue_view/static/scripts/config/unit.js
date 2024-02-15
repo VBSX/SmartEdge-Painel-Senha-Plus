@@ -1,14 +1,9 @@
 function editUnit(id) {
     var table = document.getElementById('unit-table');
     var rows = table.getElementsByTagName('tr');
-    // Iterating over the rows (starting from the second row to ignore the header)
     for (var i = 1; i < rows.length; i++) {
         var row = rows[i];
-
-        // Retrieving cells of the row
         var cells = row.getElementsByTagName('td');
-        
-        // Retrieving values from cells
         var id_unit = cells[0].innerText;
         
         if (id_unit == id) {
@@ -32,8 +27,8 @@ async function update_unit(id_unit, name_unit, unity_address, unity_phone, unity
     // TODO: AJUSTAR O PROBLEMA DE ATUALIZAR A PAGINA APÓS ENVIAR O FORM 
     // event.preventDefault(); NÃO FUNCIONA
     if (usuario_aceitou) {
-        console.log('usuario aceitou');
         var formData = new FormData();
+
         formData.append('unity_id', id_unit);
         formData.append('unity_name', name_unit);
         formData.append('unity_address', unity_address);
@@ -52,8 +47,6 @@ async function update_unit(id_unit, name_unit, unity_address, unity_phone, unity
                     console.log('unidade att');
                 });
             } else {
-                // Read the text from the response
-                
                 var message_error = await response.text();
                 console.error('Erro ao atualizar a unidade.');
                 popup_error(`Erro ao atualizar a unidade: ${message_error}`);
@@ -114,7 +107,6 @@ async function post_new_unit(name,endereco, numeroTelefone,email){
             console.log('Unidade adicionada com sucesso!');
             popup_sucess('Unidade adicionada com sucesso!');
         } else {
-            // Read the text from the response
             var message_error = await response.text();
             console.error('Erro ao adicionar a unidade.');
             popup_error(`Erro ao adicionar a unidade: ${message_error}`);
@@ -136,75 +128,12 @@ function delete_unit(id) {
                     console.log('Unidade deletada com sucesso!');
                     popup_sucess('Unidade deletada com sucesso!');
                 } else {
-                    // Read the text from the response
                     var message_error = await response.text();
                     console.error('Erro ao deletar a unidade.');
                     popup_error(`Erro ao deletar a unidade: ${message_error}`);
                 }
             });
         }
-    });
-}
-    
-
-async function popup_warning(text_warning) {
-    return new Promise((resolve) => {
-        Swal.fire({
-            title: 'Atenção',
-            text: text_warning,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Não'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        });
-    });
-}
-
-function popup_sucess(text_sucess) {
-    Swal.fire({
-        title: 'Sucesso',
-        text: text_sucess,
-        icon: 'success',
-        showCancelButton: false,
-        confirmButtonText: 'Ok'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.reload();
-        }
-    });
-}
-
-function popup_error(text_error) {
-    Swal.fire({
-        title: 'Erro',
-        text: text_error,
-        icon: 'error',
-        showCancelButton: false,
-        confirmButtonText: 'Ok'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            console.log(response);
-        }
-    });
-}
-
-function aba_sistema() {
-    const htmlContent = `
-        <h2>Sistema</h2>
-        <p>Conteúdo da aba de Sistema...</p>
-    `;
-    put_html_on_content_div(htmlContent)
-
-}
-function aba_unidades() { 
-    get_units().then(data => {
-        put_html_on_content_div(generate_html_for_unit(data));
     });
 }
 
@@ -260,108 +189,3 @@ function get_units(){
      console.error(error);
     });
 }
-
-function aba_departamentos() {
-    const htmlContent = `
-        <h2>Departamentos</h2>
-        <p>Conteúdo da aba de Departamentos...</p>
-    `;
-    put_html_on_content_div(htmlContent)
-
-}
-function aba_servicos() {
-    const htmlContent = `
-        <h2>Serviços</h2>
-        <p>Conteúdo da aba de Serviços...</p>
-    `;
-    put_html_on_content_div(htmlContent)
-
-}
-function aba_prioridades() {
-    const htmlContent= `
-        <h2>Prioridades</h2>
-        <p>Conteúdo da aba de Prioridades...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-}
-
-function aba_locais(){
-    const htmlContent= `
-        <h2>Locais</h2>
-        <p>Conteúdo da aba de Locais...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-}
-function aba_perfis(){
-    const htmlContent= `
-        <h2>Perfis</h2>
-        <p>Conteúdo da aba de Perfis...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-}
-function aba_usuarios(){
-    const htmlContent= `
-        <h2>Usuários</h2>
-        <p>Conteúdo da aba de Usuários...</p>
-        `;
-        put_html_on_content_div(htmlContent)
-}
-
-function put_html_on_content_div(htmlContent){
-    // Ou, se você estiver usando uma classe e deseja selecionar o primeiro elemento da coleção:
-    const contentDiv = document.getElementsByClassName('content')[0];
-
-    // Verifica se a div de conteúdo foi encontrada
-    if (contentDiv) {
-        // Define o HTML da div de conteúdo para o HTML desejado
-        contentDiv.innerHTML = htmlContent;
-    } else {
-        console.error('Div de conteúdo não encontrada');
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.tabs_menus li');
-   
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            const tabId = this.getAttribute('id');
-            // Lógica para exibir o conteúdo correspondente ao clicar na aba
-            if(tabId == 'sistema'){
-                console.log('sistema')
-                aba_sistema();
-            }
-            else if(tabId == 'unidades'){
-                console.log('unidades')
-                aba_unidades();
-            }
-            else if(tabId == 'departamentos'){
-                console.log('departamentos')
-                aba_departamentos();
-            }
-            else if(tabId == 'servicos'){
-                console.log('servicos')
-                aba_servicos();
-            }
-
-            else if(tabId == 'prioridades'){
-                console.log('prioridades')
-                aba_prioridades();
-            }
-
-            else if(tabId == 'locais'){
-                console.log('locais')
-                aba_locais();
-            }
-            else if(tabId == 'perfis'){
-                console.log('perfis')
-                aba_perfis();
-            } 
-            else if(tabId == 'usuarios'){
-                console.log('usuarios')
-                aba_usuarios();
-            } 
-        });
-    });
-});
-
