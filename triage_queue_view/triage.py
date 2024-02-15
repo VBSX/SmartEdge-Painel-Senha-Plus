@@ -15,9 +15,11 @@ path = os.path.abspath('./')
 sys.path.append(path)
 from triage_queue_view.user import User
 from api_queue.database.database import Database
+from flask import jsonify
 class TriageQueue(Flask):
     def __init__(self,ip):
         super().__init__(__name__)
+        self.database = Database()
         self.ip = ip
         self.url_api_get_queue = f"http://{self.ip}:5000/queue"
         self.url_call_api = f"http://{self.ip}:5000/call"
@@ -32,7 +34,8 @@ class TriageQueue(Flask):
         self.route('/login', methods=['GET', 'POST'])(self.login)
         self.route('/logout', methods=['GET'])(self.logout)
         self.route('/config', methods=['GET', 'POST'])(self.config_view)
-        self.route('/config/unit', methods=['get'])(self.get_all_unitys)
+        self.route('/config/unit', methods=['GET'])(self.get_all_unitys)
+        self.route('/config/unit', methods=['POST'])(self.update_unit)
         self.route('/', methods=['GET', 'POST', 'UPDATE'])(self.index)
 
     def favicon(self):
@@ -226,10 +229,46 @@ class TriageQueue(Flask):
         session['name_last_unity'] = user.name_last_unity
         
     def get_all_unitys(self):
-        return_db, unitys = Database().get_all_units_info()
+        return_db, unitys = self.database.get_all_units_info()
         if return_db == 'sucess':
             return unitys
     
+    def update_unit(self):
+        if 'username' in session:
+            if request.method == 'POST':
+                type_post = request.form['type_post']
+                
+                unity_name = request.form['unity_name']
+                unity_address = request.form['unity_address']
+                unity_phone = request.form['unity_phone']
+                unity_email = request.form['unity_email']
+                if type_post == 'update_unit':
+                    unity_id = request.form['unity_id']
+                    return self.update_db_unit(unity_id,unity_name, unity_address, unity_phone, unity_email)
+                elif type_post == 'new_unit':
+                    return self.add_new_unit(unity_name, unity_address, unity_phone, unity_email)
+            else:
+                return redirect(url_for('config'))      
+        else:
+            return redirect(url_for('login'))
+            
+    def update_db_unit(self, unity_id,unity_name, unity_address,unity_phone,unity_email ):
+        return_db = self.database.update_unit_info(unity_id,unity_name, unity_address, unity_phone, unity_email)
+        if return_db == 'sucess':
+            return jsonify(return_db),  200
+        else:
+            return jsonify(return_db), 400
+   
+    def add_new_unit(self, unity_name, unity_address, unity_phone, unity_email):
+        return_db = self.database.add_new_unit( unity_name, unity_address, unity_phone, unity_email)
+        return self.handle_return_db(return_db)
+        
+    def handle_return_db(self, return_db):
+        if return_db == 'sucess':
+            return jsonify(return_db), 200
+        else:
+            return jsonify(return_db), 400
+     
 if __name__ == '__main__':
     app = TriageQueue(ip="localhost")
     app.run(port=5002, debug=True)

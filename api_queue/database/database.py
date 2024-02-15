@@ -275,6 +275,25 @@ class Database():
         query = 'SELECT UnidadeID, NomeUnidade, Endereco, NumeroTelefone, email FROM unidades'
         return self.execute_query_return(query)
     
+    def update_unit_info(self,unity_id,unity_name, unity_address,unity_phone,unity_email ):
+        query = f"""
+        UPDATE unidades SET
+            Endereco = '{unity_address}',
+            NomeUnidade = '{unity_name}',
+            NumeroTelefone = '{unity_phone}',
+            email = '{unity_email}'
+            WHERE UnidadeID = {unity_id}
+            """
+        return self.execute_query(query)
+
+    def add_new_unit(self, unity_name, unity_address, unity_phone, unity_email):
+        query = f"""
+        INSERT INTO unidades (Endereco, NomeUnidade, NumeroTelefone, email)
+        VALUES ('{unity_address}', '{unity_name}', '{unity_phone}', '{unity_email}')
+            """
+        return self.execute_query(query)
+        
+        
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())
