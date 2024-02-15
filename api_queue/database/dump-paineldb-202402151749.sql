@@ -55,8 +55,9 @@ CREATE TABLE `cargos` (
   `CargoID` int(11) NOT NULL AUTO_INCREMENT,
   `NomeCargo` varchar(100) NOT NULL,
   `DescricaoCargo` text DEFAULT NULL,
+  `Status` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`CargoID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +66,7 @@ CREATE TABLE `cargos` (
 
 LOCK TABLES `cargos` WRITE;
 /*!40000 ALTER TABLE `cargos` DISABLE KEYS */;
-INSERT INTO `cargos` VALUES (1,'Administrador','Acesso total ');
+INSERT INTO `cargos` VALUES (1,'Administrador','Acesso total ','ativo'),(2,'Atendente','atendente','ativo'),(3,'Gerente','gerente','ativo'),(4,'Supervisor','supervisor','ativo');
 /*!40000 ALTER TABLE `cargos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -101,7 +102,7 @@ CREATE TABLE `fila` (
 
 LOCK TABLES `fila` WRITE;
 /*!40000 ALTER TABLE `fila` DISABLE KEYS */;
-INSERT INTO `fila` VALUES (70,1,'2024-02-08 18:39:17',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(71,2,'2024-02-08 18:40:43',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(72,3,'2024-02-08 18:40:47',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(73,4,'2024-02-08 18:40:48',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(74,5,'2024-02-08 18:40:48',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(75,6,'2024-02-08 18:40:49',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(76,7,'2024-02-08 18:40:50',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(78,9,'2024-02-08 18:42:26',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(79,10,'2024-02-09 11:29:01',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(80,11,'2024-02-09 11:29:38',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(81,12,'2024-02-09 11:39:36',1,'aguardando','0','adsdsa',123,NULL,1,'1',NULL,NULL,1),(82,13,'2024-02-09 11:42:17',1,'aguardando','0','adsdsa',123,NULL,1,'1',NULL,NULL,1),(83,14,'2024-02-09 11:45:42',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(84,15,'2024-02-09 11:49:54',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(85,16,'2024-02-09 11:49:57',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(86,17,'2024-02-09 11:49:58',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(87,18,'2024-02-09 11:50:01',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(88,19,'2024-02-09 11:50:14',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(89,20,'2024-02-09 11:53:44',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(90,21,'2024-02-09 11:53:48',1,'aguardando','0','123',11,NULL,1,'1',NULL,NULL,1),(91,22,'2024-02-09 11:55:34',1,'aguardando','0','123',11,NULL,1,'1',NULL,NULL,1),(92,23,'2024-02-09 11:55:40',1,'aguardando','0','123',123123,NULL,1,'1',NULL,NULL,1),(93,24,'2024-02-09 18:46:10',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(94,25,'2024-02-09 18:55:06',1,'Em andamento','0','123',123,NULL,1,'1','1',NULL,1),(95,26,'2024-02-12 16:04:07',1,'Em andamento','0','123',12,NULL,1,'1','1',NULL,1),(96,27,'2024-02-12 16:24:44',1,'aguardando','0','1312123132',1132123132,NULL,1,'1',NULL,NULL,1),(97,28,'2024-02-12 16:32:20',1,'Em andamento','0','1312123132',1132123132,NULL,1,'1','1',NULL,1),(98,1,'2024-02-14 13:35:21',1,'Em andamento','0','clebi',3333,NULL,1,'1','1',NULL,2);
+INSERT INTO `fila` VALUES (70,1,'2024-02-08 18:39:17',1,'Em andamento',NULL,NULL,NULL,NULL,1,'1','1',NULL,1),(71,2,'2024-02-08 18:40:43',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(72,3,'2024-02-08 18:40:47',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(73,4,'2024-02-08 18:40:48',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(74,5,'2024-02-08 18:40:48',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(75,6,'2024-02-08 18:40:49',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(76,7,'2024-02-08 18:40:50',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(78,9,'2024-02-08 18:42:26',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(79,10,'2024-02-09 11:29:01',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(80,11,'2024-02-09 11:29:38',1,'aguardando',NULL,NULL,NULL,NULL,1,'1','0',NULL,1),(81,12,'2024-02-09 11:39:36',1,'aguardando','0','adsdsa',123,NULL,1,'1',NULL,NULL,1),(82,13,'2024-02-09 11:42:17',1,'aguardando','0','adsdsa',123,NULL,1,'1',NULL,NULL,1),(83,14,'2024-02-09 11:45:42',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(84,15,'2024-02-09 11:49:54',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(85,16,'2024-02-09 11:49:57',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(86,17,'2024-02-09 11:49:58',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(87,18,'2024-02-09 11:50:01',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(88,19,'2024-02-09 11:50:14',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(89,20,'2024-02-09 11:53:44',1,'aguardando','0','asd',123,NULL,1,'1',NULL,NULL,1),(90,21,'2024-02-09 11:53:48',1,'aguardando','0','123',11,NULL,1,'1',NULL,NULL,1),(91,22,'2024-02-09 11:55:34',1,'aguardando','0','123',11,NULL,1,'1',NULL,NULL,1),(92,23,'2024-02-09 11:55:40',1,'aguardando','0','123',123123,NULL,1,'1',NULL,NULL,1),(93,24,'2024-02-09 18:46:10',1,'aguardando','0','asdas',123,NULL,1,'1',NULL,NULL,1),(94,25,'2024-02-09 18:55:06',1,'Em andamento','0','123',123,NULL,1,'1','1',NULL,1),(95,26,'2024-02-12 16:04:07',1,'Em andamento','0','123',12,NULL,1,'1','1',NULL,1),(96,27,'2024-02-12 16:24:44',1,'aguardando','0','1312123132',1132123132,NULL,1,'1',NULL,NULL,1),(97,28,'2024-02-12 16:32:20',1,'Em andamento','0','1312123132',1132123132,NULL,1,'1','1',NULL,1),(98,1,'2024-02-14 13:35:21',1,'Em andamento','0','clebi',3333,NULL,1,'1','1',NULL,2);
 /*!40000 ALTER TABLE `fila` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,8 +259,9 @@ CREATE TABLE `unidades` (
   `Endereco` varchar(255) DEFAULT NULL,
   `NumeroTelefone` varchar(15) DEFAULT NULL,
   `Email` varchar(255) DEFAULT NULL,
+  `Status` varchar(100) NOT NULL,
   PRIMARY KEY (`UnidadeID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -268,7 +270,7 @@ CREATE TABLE `unidades` (
 
 LOCK TABLES `unidades` WRITE;
 /*!40000 ALTER TABLE `unidades` DISABLE KEYS */;
-INSERT INTO `unidades` VALUES (1,'atendimento','rua','11','teste@mail.com'),(2,'sao juao','rrr','112','@mail');
+INSERT INTO `unidades` VALUES (1,'atendimento','rua','449999999','teste@mail.commmm','ativo'),(2,'sao juao','rrr','112','@mail','ativo'),(3,'tutulandia','rua 2','123','@mail.com','desativado'),(4,'unidade leste','rua pinheiros','11989909546','teste@mail.coim','desativado'),(5,'asdas','dasd','asdas','dasd','desativado'),(6,'sad','asdasd','asdasd','asdas','ativo'),(7,'asdasd','asdas','asdasd','asdasd','ativo'),(8,'asda','sdas','asd','asd','ativo'),(9,'asd','asd','asd','asd','ativo');
 /*!40000 ALTER TABLE `unidades` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,7 +319,7 @@ CREATE TABLE `usuarios` (
   `Sobrenome` varchar(100) NOT NULL,
   `NomeUsuario` varchar(50) NOT NULL,
   `Senha` varchar(255) NOT NULL,
-  `Cargo` enum('Atendente','Supervisor','Admin') NOT NULL,
+  `Cargo` varchar(50) DEFAULT NULL,
   `UserApiId` varchar(50) NOT NULL,
   `UserApiSecret` varchar(255) NOT NULL,
   `Status` enum('Ativo','Inativo') NOT NULL,
@@ -334,7 +336,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'admin ','Painel','admin','1','Admin','123456','123456','Ativo',1,'2023-09-13 13:35:39');
+INSERT INTO `usuarios` VALUES (1,'admin ','Painel','admin','1','Administrador','123456','123456','Ativo',1,'2023-09-13 13:35:39');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,4 +410,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-02-14 11:41:52
+-- Dump completed on 2024-02-15 17:49:43
