@@ -93,10 +93,10 @@ function aba_locais(){
     put_html_on_content_div(htmlContent)
     window.scrollTo(0, 0);
 }
-function aba_perfis(){
+function aba_cargos(){
     const htmlContent= `
-        <h2>Perfis</h2>
-        <p>Conteúdo da aba de Perfis...</p>
+        <h2>Cargos</h2>
+        <p>Conteúdo da aba de Cargos...</p>
         `;
     put_html_on_content_div(htmlContent)
     window.scrollTo(0, 0);
@@ -159,9 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('locais')
                 aba_locais();
             }
-            else if(tabId == 'perfis'){
-                console.log('perfis')
-                aba_perfis();
+            else if(tabId == 'cargos'){
+                console.log('cargos')
+                aba_cargos();
             } 
             else if(tabId == 'usuarios'){
                 console.log('usuarios')
