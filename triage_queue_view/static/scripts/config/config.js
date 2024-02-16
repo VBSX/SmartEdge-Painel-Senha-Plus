@@ -51,12 +51,13 @@ function aba_sistema() {
         <p>Conteúdo da aba de Sistema...</p>
     `;
     put_html_on_content_div(htmlContent)
-
+    window.scrollTo(0, 0);
 }
 function aba_unidades() { 
     get_units().then(data => {
         put_html_on_content_div(generate_html_for_unit(data));
     });
+    window.scrollTo(0, 0);
 }
 
 function aba_departamentos() {
@@ -65,7 +66,7 @@ function aba_departamentos() {
         <p>Conteúdo da aba de Departamentos...</p>
     `;
     put_html_on_content_div(htmlContent)
-
+    window.scrollTo(0, 0);
 }
 function aba_servicos() {
     const htmlContent = `
@@ -73,14 +74,15 @@ function aba_servicos() {
         <p>Conteúdo da aba de Serviços...</p>
     `;
     put_html_on_content_div(htmlContent)
-
+    window.scrollTo(0, 0);
 }
 function aba_prioridades() {
     const htmlContent= `
         <h2>Prioridades</h2>
         <p>Conteúdo da aba de Prioridades...</p>
         `;
-        put_html_on_content_div(htmlContent)
+    put_html_on_content_div(htmlContent)
+    window.scrollTo(0, 0);
 }
 
 function aba_locais(){
@@ -88,20 +90,25 @@ function aba_locais(){
         <h2>Locais</h2>
         <p>Conteúdo da aba de Locais...</p>
         `;
-        put_html_on_content_div(htmlContent)
+    put_html_on_content_div(htmlContent)
+    window.scrollTo(0, 0);
 }
 function aba_perfis(){
     const htmlContent= `
         <h2>Perfis</h2>
         <p>Conteúdo da aba de Perfis...</p>
         `;
-        put_html_on_content_div(htmlContent)
+    put_html_on_content_div(htmlContent)
+    window.scrollTo(0, 0);
+
 }
 function aba_usuarios(){
     get_users().then(data => {
         get_roles().then(roles => {put_html_on_content_div(generate_html_for_user(data, roles));})
         
     })
+    window.scrollTo(0, 0);
+
 }
 
 function put_html_on_content_div(htmlContent){
@@ -119,7 +126,9 @@ function put_html_on_content_div(htmlContent){
 
 document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tabs_menus li');
-   
+    // mover para o topo da pagina
+    window.scrollTo(0, 0);
+
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const tabId = this.getAttribute('id');

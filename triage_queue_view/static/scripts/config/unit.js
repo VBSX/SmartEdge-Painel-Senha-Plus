@@ -89,7 +89,7 @@ async function createNewUnit(){
           }
         }
       })
-    }
+}
 
 async function post_new_unit(name,endereco, numeroTelefone,email){
     var formData = new FormData();

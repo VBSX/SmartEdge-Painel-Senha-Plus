@@ -40,6 +40,7 @@ class TriageQueue(Flask):
         self.route('/config/unit', methods=['DELETE'])(self.delete_unit)
         self.route('/config/users', methods=['GET'])(self.get_users)
         self.route('/config/users', methods=['POST'])(self.update_user)
+        self.route('/config/users', methods=['DELETE'])(self.delete_user)
         self.route('/config/role', methods=['GET'])(self.get_roles)
         
         self.route('/', methods=['GET', 'POST', 'UPDATE'])(self.index)
@@ -298,11 +299,16 @@ class TriageQueue(Flask):
             id = request.form['id']
             name = request.form['name']
             last_name = request.form['last_name']
-            role = request.form['role']
+            role_id = request.form['role']
             if type_post == 'update_user':
-                return_db = self.database.update_user_info(id, name, last_name, role)
+                return_db = self.database.update_user_info(id, name, last_name, role_id)
                 return self.handle_return_db(return_db)
     
+    def delete_user(self):
+        if request.method == 'DELETE':
+            id = request.form['id_user']
+            return_db = self.database.delete_user(id)
+            return self.handle_return_db(return_db)
     
 if __name__ == '__main__':
     app = TriageQueue(ip="localhost")

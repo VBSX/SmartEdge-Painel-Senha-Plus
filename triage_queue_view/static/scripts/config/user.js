@@ -11,7 +11,6 @@ function get_users(){
     });
 }
 
-
 function generate_html_for_user(list_of_users,all_roles){
     var htmlContent = `
         <h2>Usuários</h2>
@@ -36,6 +35,7 @@ function generate_html_for_user(list_of_users,all_roles){
         var username = unit[3];
         var user_role = unit[4];
         var date_creation_of_user = unit[5];
+
         htmlContent += `
             <tr>
                 <td>${id_user}</td>
@@ -44,18 +44,19 @@ function generate_html_for_user(list_of_users,all_roles){
                 <td>${username}</td>
                 <td>
                     <select>
-                        <option value="${user_role}">${user_role}</option>`;
-
+                `;
 
         console.log('all_roles:', all_roles);
         for (var j = 0; j < all_roles.length; j++) {
             var role = all_roles[j];
             var role_id = role[0];
             var role_name = role[1];
-            
-            console.log(role_id, role_name);
-            if (role_name != user_role) {
+
+            if (role_id != user_role) {
                 htmlContent += `<option value="${role_id}">${role_name}</option>`;
+            }
+            else{
+                htmlContent += `<option value="${role_id}" selected>${role_name}</option>`;
             }
         }
 
@@ -92,27 +93,27 @@ function edit_user(id){
             var name_user = cells[1].innerText;
             var lastname_user = cells[2].innerText;
             var role_user = cells[4].querySelector('select').value;
+
             console.log('ID do usuário:', id_user);
             console.log('nome do usuário:', name_user);
             console.log('sobrenome do usuário:', lastname_user);
             console.log('cargo do usuário', role_user);
             update_user(id_user, name_user, lastname_user, role_user);
-            
             break;
         }
     }
 }
 
-async function update_user(id, name, lastname, role){
+async function update_user(id, name, lastname, role_id){
     await popup_warning(`Certeza que deseja continuar a atualizar as informações do usuário: ${name} ?`).then(async (usuario_aceitou) => {
-    console.log(id, name,lastname, role )
+    console.log(id, name,lastname, role_id )
     if (usuario_aceitou) {
         var formData = new FormData();
 
         formData.append('id', id);
         formData.append('name', name);
         formData.append('last_name', lastname);
-        formData.append('role', role);
+        formData.append('role', role_id);
         formData.append('type_post', 'update_user');
 
         console.log('formulario',formData);
@@ -124,8 +125,8 @@ async function update_user(id, name, lastname, role){
             if (response.ok) {
                 console.log('Usuário atualizado com sucesso!');
                 await popup_sucess('Usuário atualizado com sucesso!').then(() => {
-                    aba_usuarios();
                     console.log('unidade att');
+                    aba_usuarios();
                 });
             } else {
                 var message_error = await response.text();
@@ -135,5 +136,102 @@ async function update_user(id, name, lastname, role){
         });
     }
     })
+}
+
+
+function delete_user(id){
+
+    popup_warning(`Certeza que deseja deletar o usuário ${id} ?`).then(async (usuario_aceitou) => {
+        if (usuario_aceitou){
+            var formData = new FormData();
+            formData.append('id_user', id);
+
+            fetch('/config/users', {
+                method: 'DELETE',
+                body: formData
+            }).then(async response => {
+                if (response.ok) {
+                    console.log('Usuário deletado com sucesso!');
+                    popup_sucess('Usuário deletado com sucesso!');
+                } else {
+                    var message_error = await response.text();
+                    console.error('Erro ao deletar o usuário');
+                    popup_error(`Erro ao deletar o usuário: ${message_error}`);
+                }
+            });
+        }
+    });
+}
+
+function create_new_user() {
+    // Lista de opções de cargos disponíveis
+    const roles = [
+        'Administrador',
+        'Atendente',
+        'Gerente',
+        'Supervisor'
+        // Adicione mais opções conforme necessário
+    ];
+
+
+    // Transforma a lista de opções em um formato HTML de opções de um select
+    const rolesOptions = roles.map(role => `<option value="${role}">${role}</option>`).join('');
+    
+
+    Swal.fire({
+        title: '<strong>Cadastro de Usuário</strong>',
+        html: `
+            <label for="inputName">Nome do Usuário:</label>
+            <input type="text" id="inputName" class="swal2-input" required>
+
+            <label for="inputSobrenome">Sobrenome:</label>
+            <input type="text" id="inputSobrenome" class="swal2-input" required>
+
+            <label for="inputSenha">Senha do Usuário:</label>
+            <input type="password" id="inputSenha" class="swal2-input" required>
+
+            <label for="DropboxCargo">Cargo:</label>
+            <select id="DropboxCargo" class="swal2-input" required>
+                <option value="">Selecione o cargo</option>
+                ${rolesOptions}
+            </select>
+
+            <label for="selectUnidades">Unidades:</label>
+            <select id="selectUnidades" multiple>
+                <option value="Unidade 1">Unidade 1</option>
+                <option value="Unidade 2">Unidade 2</option>
+                <!-- Adicione mais opções conforme necessário -->
+            </select>
+            <script>
+                $(document).ready(function() {
+                    $('#selectUnidades').multiselect({
+                        enableFiltering: true, // Habilita a filtragem das opções
+                        maxHeight: 300 // Define a altura máxima do dropdown
+                    });
+                });
+            </script>
+        `,
+        focusConfirm: false,
+        showCloseButton: true,
+        confirmButtonText: 'Criar Usuário',
+        preConfirm: () => {
+            const inputName = Swal.getPopup().querySelector('#inputName').value;
+            const inputSobrenome = Swal.getPopup().querySelector('#inputSobrenome').value;
+            const inputSenha = Swal.getPopup().querySelector('#inputSenha').value;
+            const DropboxCargo = Swal.getPopup().querySelector('#DropboxCargo').value;
+            const selectUnidades = document.multiselect('#selectUnidades');
+            const unidadesSelecionadas = selectUnidades.value;
+
+            if (!inputName || !inputSobrenome || !inputSenha || !DropboxCargo || !unidadesSelecionadas) {
+                Swal.showValidationMessage(`Preencha todos os campos`);
+            } else {
+                post_new_user(inputName, inputSobrenome, inputSenha, DropboxCargo, unidadesSelecionadas);
+                aba_usuarios();
+            }
+        }
+    });
+}
+
+function post_new_user(){
 
 }

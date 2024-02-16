@@ -356,15 +356,20 @@ class Database():
         """
         return self.execute_query_return(query)
     
-    def update_user_info(self, id, name, lastname, role):
+    def update_user_info(self, id, name, lastname, role_id):
         query = f"""
         UPDATE usuarios SET
             Nome = '{name}',
             Sobrenome = '{lastname}',
-            Cargo = {role}
+            Cargo = {role_id}
         WHERE UsuarioID = {id}
         """
-        self.execute_query(query)
+        print(query)
+        return self.execute_query(query)
+    
+    def delete_user(self, id):
+        query = f"UPDATE usuarios SET Status = 'inativo' WHERE UsuarioID = {id}"
+        return self.execute_query(query)
     
 if __name__ == "__main__":
     db = Database()
