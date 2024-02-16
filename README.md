@@ -1,4 +1,4 @@
-# SmartEdge-Painel-senha
+# SmartEdge-Painel-Senha-Plus
 <br />
 <p align="center">
   </a>
@@ -13,8 +13,12 @@
 </p>
 
 ---
+```diff
+- OBS: This version is still under development, so new features will be added so that it has a stable version.
+```
+---
 ### Table of contents
-- [SmartEdge-Painel-senha](#smartedge-painel-senha)
+- [SmartEdge-Painel-Senha-Plus](#smartedge-painel-senha-plus)
     - [Table of contents](#table-of-contents)
   - [About The Project](#about-the-project)
     - [Built With](#built-with)
