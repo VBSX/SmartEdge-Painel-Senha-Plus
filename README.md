@@ -14,7 +14,7 @@
 
 ---
 ```diff
-- OBS: This version is still under development, so new features will be added so that it has a stable version.
+- NOTE: This version is still under development, so new features will be added so that it has a stable version.
 ```
 ---
 ### Table of contents
