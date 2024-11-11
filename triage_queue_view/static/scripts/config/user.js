@@ -173,10 +173,8 @@ function create_new_user() {
         // Adicione mais opções conforme necessário
     ];
 
-
     // Transforma a lista de opções em um formato HTML de opções de um select
     const rolesOptions = roles.map(role => `<option value="${role}">${role}</option>`).join('');
-    
 
     Swal.fire({
         title: '<strong>Cadastro de Usuário</strong>',
@@ -197,41 +195,89 @@ function create_new_user() {
             </select>
 
             <label for="selectUnidades">Unidades:</label>
-            <select id="selectUnidades" multiple>
+            <select id="selectUnidades" multiple class="swal2-input">
                 <option value="Unidade 1">Unidade 1</option>
                 <option value="Unidade 2">Unidade 2</option>
                 <!-- Adicione mais opções conforme necessário -->
             </select>
-            <script>
-                $(document).ready(function() {
-                    $('#selectUnidades').multiselect({
-                        enableFiltering: true, // Habilita a filtragem das opções
-                        maxHeight: 300 // Define a altura máxima do dropdown
-                    });
-                });
-            </script>
         `,
         focusConfirm: false,
         showCloseButton: true,
         confirmButtonText: 'Criar Usuário',
+        didOpen: () => {
+            // Inicializa o plugin de múltipla seleção, se disponível
+            $('#selectUnidades').multiselect({
+                enableFiltering: true, // Habilita a filtragem das opções
+                maxHeight: 300 // Define a altura máxima do dropdown
+            });
+        },
         preConfirm: () => {
             const inputName = Swal.getPopup().querySelector('#inputName').value;
             const inputSobrenome = Swal.getPopup().querySelector('#inputSobrenome').value;
             const inputSenha = Swal.getPopup().querySelector('#inputSenha').value;
             const DropboxCargo = Swal.getPopup().querySelector('#DropboxCargo').value;
-            const selectUnidades = document.multiselect('#selectUnidades');
-            const unidadesSelecionadas = selectUnidades.value;
-
-            if (!inputName || !inputSobrenome || !inputSenha || !DropboxCargo || !unidadesSelecionadas) {
+            const selectUnidades = Array.from(Swal.getPopup().querySelectorAll('#selectUnidades option:checked')).map(opt => opt.value);
+            if (!inputName || !inputSobrenome || !inputSenha || !DropboxCargo || selectUnidades.length === 0) {
                 Swal.showValidationMessage(`Preencha todos os campos`);
             } else {
-                post_new_user(inputName, inputSobrenome, inputSenha, DropboxCargo, unidadesSelecionadas);
-                aba_usuarios();
+                console.log({
+                    type_post: 'new_user',
+                    name: inputName,
+                    last_name: inputSobrenome,
+                    password: inputSenha,
+                    role: DropboxCargo,
+                    unit: selectUnidades
+                });
+                return {
+                    type_post: 'new_user',
+                    name: inputName,
+                    last_name: inputSobrenome,
+                    password: inputSenha,
+                    role: DropboxCargo,
+                    unit: selectUnidades
+                };
             }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Faz o post dos dados
+            post_new_user(result.value);
+            aba_usuarios();
         }
     });
 }
 
-function post_new_user(){
 
+function post_new_user(data) {
+    // Cria o objeto FormData e anexa os campos necessários
+    var formData = new FormData();
+    formData.append('type_post', 'new_user');   
+    formData.append('name', data.name);         
+    formData.append('last_name', data.last_name);
+    formData.append('password', data.password);
+    formData.append('role', data.role); 
+    formData.append('unit', data.unit);
+
+    // Adiciona as unidades selecionadas como uma lista (ou como strings individuais, se necessário)
+    data.unit.forEach((unit, index) => {
+        formData.append(`unit[${index}]`, unit); // Adiciona cada unidade individualmente
+    });
+
+    console.log('FormData para a API:', Array.from(formData.entries())); // Verifica o conteúdo do FormData
+
+    // Envia o FormData para a API
+    fetch('/config/users', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            Swal.fire('Sucesso', 'Usuário criado com sucesso!', 'success');
+        } else {
+            Swal.fire('Erro', 'Houve um problema ao criar o usuário', 'error');
+        }
+    })
+    .catch(error => {
+        Swal.fire('Erro', 'Não foi possível conectar ao servidor', 'error');
+    });
 }

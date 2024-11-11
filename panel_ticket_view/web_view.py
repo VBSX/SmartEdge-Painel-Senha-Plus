@@ -164,5 +164,5 @@ class DisplayApp(Flask):
 if __name__ == '__main__':
     app = DisplayApp('', '','', '', '', 'asasdsaas465465')
 
-    app.verify_if_is_data_is_valid('admin', '1', '1', '1')
+    # app.verify_if_is_data_is_valid('admin', '1', '1', '1')
     app.run(port=5001, debug=True)

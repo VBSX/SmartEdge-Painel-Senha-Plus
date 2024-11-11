@@ -1,3 +1,4 @@
+
 function editUnit(id) {
     var table = document.getElementById('unit-table');
     var rows = table.getElementsByTagName('tr');
@@ -106,17 +107,18 @@ async function post_new_unit(name,endereco, numeroTelefone,email){
         if (response.ok) {
             console.log('Unidade adicionada com sucesso!');
             popup_sucess('Unidade adicionada com sucesso!');
+            aba_unidades();
         } else {
             var message_error = await response.text();
             console.error('Erro ao adicionar a unidade.');
-            popup_error(`Erro ao adicionar a unidade: ${message_error}`);
+            aba_unidades();
         }
     });
 }
 
 function delete_unit(id) {
     popup_warning(`Certeza que deseja deletar a unidade ${id} ?`).then(async (usuario_aceitou) => {
-        if (usuario_aceitou){
+        if (usuario_aceitou) {
             var formData = new FormData();
             formData.append('unity_id', id);
 
@@ -126,11 +128,17 @@ function delete_unit(id) {
             }).then(async response => {
                 if (response.ok) {
                     console.log('Unidade deletada com sucesso!');
-                    popup_sucess('Unidade deletada com sucesso!');
+                    // Exibe o popup e, depois que o usuário confirma, atualiza o grid
+                    popup_sucess('Unidade deletada com sucesso!').then(async () => {
+                        const updated_units = await get_units();
+                        generate_html_for_unit(updated_units);
+                    });
                 } else {
                     var message_error = await response.text();
                     console.error('Erro ao deletar a unidade.');
                     popup_error(`Erro ao deletar a unidade: ${message_error}`);
+                    const updated_units = await get_units();
+                    generate_html_for_unit(updated_units);
                 }
             });
         }

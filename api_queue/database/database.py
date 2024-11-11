@@ -22,6 +22,8 @@ class Database():
             'host': host, 
             'database': database,
         }
+        self.config['charset'] = 'utf8mb4'
+        self.config['collation'] = 'utf8mb4_general_ci'
         
 
     def execute_query(self, query):
@@ -371,7 +373,14 @@ class Database():
         query = f"UPDATE usuarios SET Status = 'inativo' WHERE UsuarioID = {id}"
         return self.execute_query(query)
     
+    def add_new_user(self, name, lastname, password, role_id, unit_id):
+        query = f"""
+        INSERT INTO usuarios (Nome, Sobrenome, Senha, Cargo, Status)
+        VALUES ('{name}', '{lastname}','{password}',  {role_id},'{unit_id}' , 'ativo')
+        """
+        return self.execute_query(query)
+    
 if __name__ == "__main__":
     db = Database()
     # print(db.select_all_from_query())
-    print(db.select_actual_queue(1))
+    print(db.add_new_user('teste', 'teste', 'teste', 1, 1))

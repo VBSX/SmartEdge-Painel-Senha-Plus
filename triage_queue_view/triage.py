@@ -294,20 +294,35 @@ class TriageQueue(Flask):
             return roles
     
     def update_user(self):
-        if request.method == 'POST':
-            type_post = request.form['type_post']
-            id = request.form['id']
-            name = request.form['name']
-            last_name = request.form['last_name']
-            role_id = request.form['role']
-            if type_post == 'update_user':
-                return_db = self.database.update_user_info(id, name, last_name, role_id)
-                return self.handle_return_db(return_db)
+        if 'username' in session:
+            if request.method == 'POST':
+                type_post = request.form['type_post']
+                name = request.form['name']
+                last_name = request.form['last_name']
+                role_id = request.form['role']
+                if type_post == 'update_user':
+                    id = request.form['id']
+                    return_db = self.database.update_user_info(id, name, last_name, role_id)
+                    return self.handle_return_db(return_db)
+                elif type_post == 'new_user':
+                    password_user = request.form.get('password')
+                    unit_id = request.form.get('unit')
+                    return self.add_new_user(name, last_name, password_user, role_id, unit_id)
+        else:   
+            return redirect(url_for('login'))            
     
     def delete_user(self):
-        if request.method == 'DELETE':
-            id = request.form['id_user']
-            return_db = self.database.delete_user(id)
+        if 'username' in session:
+            if request.method == 'DELETE':
+                id = request.form['id_user']
+                return_db = self.database.delete_user(id)
+                return self.handle_return_db(return_db)
+        else:
+            return redirect(url_for('login')) 
+        
+    def add_new_user(self, name, last_name,password_user, role_id, unit_id):
+            return_db = self.database.add_new_user(name, last_name, password_user, role_id, unit_id )
+            print(return_db)
             return self.handle_return_db(return_db)
     
 if __name__ == '__main__':
